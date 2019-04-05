@@ -22,7 +22,7 @@ namespace UserProfileDemo.Converters
                 Console.WriteLine($"ByteToImageFieldConverter Exception: {ex.Message}");
             }
 
-            return retSource ?? "profile_placeholder";
+            return retSource ?? "profile_placeholder.png";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture) 
