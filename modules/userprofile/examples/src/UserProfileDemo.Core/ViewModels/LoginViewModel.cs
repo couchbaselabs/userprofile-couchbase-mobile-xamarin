@@ -1,12 +1,12 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
+using CouchbaseLabs.MVVM;
+using CouchbaseLabs.MVVM.Input;
+using CouchbaseLabs.MVVM.Services;
 
 namespace UserProfileDemo.Core.ViewModels
 {
-    public class LoginViewModel : BaseNotify
+    public class LoginViewModel : BaseNavigationViewModel
     {
-        Action SignInSuccessful { get; set; }
-
         string _username;
         public string Username
         {
@@ -41,10 +41,8 @@ namespace UserProfileDemo.Core.ViewModels
             }
         }
 
-        public LoginViewModel(Action signInSuccessful)
-        {
-            SignInSuccessful = signInSuccessful;
-        }
+        public LoginViewModel(INavigationService navigationService) : base(navigationService)
+        {  }
 
         void SignIn()
         {
@@ -56,8 +54,7 @@ namespace UserProfileDemo.Core.ViewModels
                     Password = Password
                 };
 
-                SignInSuccessful?.Invoke();
-                SignInSuccessful = null;
+                Navigation.ReplaceRoot(ServiceContainer.GetInstance<UserProfileViewModel>());
             }
         }
     } 

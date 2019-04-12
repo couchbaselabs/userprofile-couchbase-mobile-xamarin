@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Input;
 
-namespace UserProfileDemo.Core
+namespace CouchbaseLabs.MVVM.Input
 {
     public sealed class Command<T> : Command
     {

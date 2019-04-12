@@ -1,24 +1,14 @@
 ﻿using System;
-using UserProfileDemo.Core;
-using UserProfileDemo.Core.Respositories;
-using UserProfileDemo.Core.Services;
+using CouchbaseLabs.MVVM.Forms.Pages;
 using UserProfileDemo.Core.ViewModels;
-using Xamarin.Forms;
 
 namespace UserProfileDemo.Pages
 {
-    public partial class UserProfilePage : ContentPage
+    public partial class UserProfilePage : BaseContentPage<UserProfileViewModel>
     {
-        public UserProfilePage(Action logoutSuccesful)
+        public UserProfilePage()
         {
             InitializeComponent();
-
-            // Set up in place of having a dependency on a DI solution
-            var userProfileRepository = ServiceContainer.Resolve<IUserProfileRepository>();
-            var alertService = ServiceContainer.Resolve<IAlertService>();
-            var mediaService = ServiceContainer.Resolve<IMediaService>();
-
-            BindingContext = new UserProfileViewModel(userProfileRepository, alertService, mediaService, logoutSuccesful);
         }
     }
 }

@@ -1,68 +1,41 @@
 ﻿using System;
-using System.IO;
+using System.Threading.Tasks;
 using Couchbase.Lite;
-using UserProfileDemo.Core;
 using UserProfileDemo.Core.Respositories;
 using UserProfileDemo.Models;
 
-namespace UserProfileDemo.Respositories
+namespace UserProfileDemo.Repositories
 {
-    public sealed class UserProfileRepository : BaseRepository<UserProfile, string>, IUserProfileRepository
+    public sealed class UserProfileRepository : BaseRepository, IUserProfileRepository
     {
-        // tag::databaseconfiguration[]
-        DatabaseConfiguration _databaseConfig;
-        protected override DatabaseConfiguration DatabaseConfig
-        {
-            get
-            {
-                if (_databaseConfig == null)
-                {
-                    if (AppInstance.User?.Username == null)
-                    {
-                        throw new Exception($"Repository Exception: A valid user is required!");
-                    }
-
-                    _databaseConfig = new DatabaseConfiguration
-                    {
-                        Directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                        AppInstance.User.Username)
-                    };
-                }
-
-                return _databaseConfig;
-            }
-            set => _databaseConfig = value;
-        }
-        // end::databaseconfiguration[]
-
-        // tag::databasename[]
-        public UserProfileRepository() : base("userprofile")
+        public UserProfileRepository() : base("userprofiles")
         { }
-        // tag::databasename[]
 
-        // tag::getUserProfile[]
-        public override UserProfile Get(string userProfileId)
-        // end::getUserProfile[]
+        public async Task<UserProfile> GetAsync(string userProfileId)
         {
             UserProfile userProfile = null;
 
             try
             {
-                // tag::docfetch[]
-                var document = Database.GetDocument(userProfileId);
+                var database = await GetDatabaseAsync();
 
-                if (document != null)
+                if (database != null)
                 {
-                    userProfile = new UserProfile
+                    var document = database.GetDocument(userProfileId);
+
+                    if (document != null)
                     {
-                        Id = document.Id,
-                        Name = document.GetString("Name"),
-                        Email = document.GetString("Email"),
-                        Address = document.GetString("Address"),
-                        ImageData = document.GetBlob("ImageData")?.Content
-                    };
+                        userProfile = new UserProfile
+                        {
+                            Id = document.Id,
+                            Name = document.GetString("Name"),
+                            Email = document.GetString("Email"),
+                            Address = document.GetString("Address"),
+                            ImageData = document.GetBlob("ImageData")?.Content,
+                            University = document.GetString("University")
+                        };
+                    }
                 }
-                // end::docfetch[]
             }
             catch (Exception ex)
             {
@@ -72,29 +45,26 @@ namespace UserProfileDemo.Respositories
             return userProfile;
         }
 
-        // tag::saveUserProfile[]
-        public override bool Save(UserProfile userProfile)
-        // end::saveUserProfile[]
+        public async Task<bool> SaveAsync(UserProfile userProfile)
         {
             try
             {
                 if (userProfile != null)
                 {
-                    // tag::docSet[]
                     var mutableDocument = new MutableDocument(userProfile.Id);
                     mutableDocument.SetString("Name", userProfile.Name);
                     mutableDocument.SetString("Email", userProfile.Email);
                     mutableDocument.SetString("Address", userProfile.Address);
+                    mutableDocument.SetString("University", userProfile.University);
 
                     if (userProfile.ImageData != null)
                     {
                         mutableDocument.SetBlob("ImageData", new Blob("image/jpeg", userProfile.ImageData));
                     }
-                    // end::docSet[]
 
-                    // tag::docSave[]
-                    Database.Save(mutableDocument);
-                    // end::docSave[]
+                    var database = await GetDatabaseAsync();
+
+                    database.Save(mutableDocument);
 
                     return true;
                 }

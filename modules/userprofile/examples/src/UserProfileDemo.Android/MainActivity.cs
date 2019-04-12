@@ -1,6 +1,9 @@
 ﻿using Android.App;
 using Android.Content.PM;
 using Android.OS;
+using CouchbaseLabs.MVVM;
+using UserProfileDemo.Droid.Services;
+using UserProfileDemo.Repositories.Services;
 
 namespace UserProfileDemo.Droid
 {
@@ -22,7 +25,14 @@ namespace UserProfileDemo.Droid
             Couchbase.Lite.Support.Droid.Activate(this);
             // end::activate[]
 
+            RegisterServices();
+
             LoadApplication(new App());
+        }
+
+        void RegisterServices()
+        {
+            ServiceContainer.Register<IDatabaseSeedService>(() => new DatabaseSeedService(ApplicationContext));
         }
     }
 }

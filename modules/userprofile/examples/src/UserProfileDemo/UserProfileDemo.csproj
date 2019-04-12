@@ -22,6 +22,8 @@
   <ItemGroup>
     <ProjectReference Include="..\UserProfileDemo.Core\UserProfileDemo.Core.csproj" />
     <ProjectReference Include="..\UserProfileDemo.Repositories\UserProfileDemo.Repositories.csproj" />
+    <ProjectReference Include="..\CouchbaseLabs.MVVM.Forms\CouchbaseLabs.MVVM.Forms.csproj" />
+    <ProjectReference Include="..\CouchbaseLabs.MVVM\CouchbaseLabs.MVVM.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Converters\ByteToImageFieldConverter.xml" />

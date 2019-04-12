@@ -1,8 +1,10 @@
-﻿using UserProfileDemo.Core;
+﻿using CouchbaseLabs.MVVM;
+using CouchbaseLabs.MVVM.Services;
 using UserProfileDemo.Core.Respositories;
 using UserProfileDemo.Core.Services;
+using UserProfileDemo.Core.ViewModels;
 using UserProfileDemo.Pages;
-using UserProfileDemo.Respositories;
+using UserProfileDemo.Repositories;
 using UserProfileDemo.Services;
 using Xamarin.Forms;
 using Xamarin.Forms.Xaml;
@@ -12,30 +14,41 @@ namespace UserProfileDemo
 {
     public partial class App : Application
     {
+        INavigationService NavigationService { get; set; }
+
         public App()
         {
             InitializeComponent();
 
-            // Set up in place of having a dependency on a DI solution
-            RegisterServices();
             RegisterRepositories();
 
-            MainPage = new LoginPage(OnSignInSuccessful);
-        }
+            RegisterServices();
 
-        void RegisterServices()
-        {
-            ServiceContainer.Register<IAlertService>(() => new AlertService());
-            ServiceContainer.Register<IMediaService>(() => new MediaService());
+            /*
+            MainPage = new LoginPage
+            {
+                ViewModel = ServiceContainer.GetInstance<LoginViewModel>()
+            };
+            */
+
+            NavigationService.ReplaceRoot(ServiceContainer.GetInstance<LoginViewModel>(), false);
         }
 
         void RegisterRepositories()
         {
-            ServiceContainer.Register<IUserProfileRepository>(() => new UserProfileRepository());
+            ServiceContainer.Register<IUserProfileRepository>(new UserProfileRepository());
+            ServiceContainer.Register<IUniversityRepository>(new UniversityRepository());
         }
 
-        void OnSignInSuccessful() => MainPage = new NavigationPage(new UserProfilePage(OnLogoutSuccesful));
+        void RegisterServices()
+        {
+            ServiceContainer.Register<IAlertService>(new AlertService());
+            ServiceContainer.Register<IMediaService>(new MediaService());
 
-        void OnLogoutSuccesful() => MainPage = new LoginPage(OnSignInSuccessful);
+            NavigationService = new NavigationService();
+            NavigationService.AutoRegister(typeof(App).Assembly);
+
+            ServiceContainer.Register(NavigationService);
+        }
     }
 }

@@ -129,6 +129,9 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="UserProfileDemo.UWP_TemporaryKey.pfx" />
+    <None Include="Assets\universities.cblite2\db.sqlite3" />
+    <None Include="Assets\universities.cblite2\db.sqlite3-shm" />
+    <None Include="Assets\universities.cblite2\db.sqlite3-wal" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\icon.png" />

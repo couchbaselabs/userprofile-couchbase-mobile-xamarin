@@ -9,6 +9,7 @@ namespace UserProfileDemo.Core
     //
     // A simple service locator register.
     //===============================================================================
+    /*
     public static class ServiceContainer
     {
         static readonly Dictionary<Type, Lazy<object>> services = new Dictionary<Type, Lazy<object>>();
@@ -70,4 +71,5 @@ namespace UserProfileDemo.Core
         /// </summary>
         public static void Clear() => services.Clear();
     }
+    */
 }

@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace UserProfileDemo.Core
+namespace CouchbaseLabs.MVVM
 {
     public abstract class BaseNotify : INotifyPropertyChanged
     {

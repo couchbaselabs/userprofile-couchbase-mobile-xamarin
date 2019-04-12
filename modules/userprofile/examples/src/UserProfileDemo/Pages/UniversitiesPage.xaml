@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pages:BaseContentPage 
+    xmlns="http://xamarin.com/schemas/2014/forms"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml" 
+    xmlns:pages="clr-namespace:CouchbaseLabs.MVVM.Forms.Pages;assembly=CouchbaseLabs.MVVM.Forms"
+    xmlns:controls="clr-namespace:CouchbaseLabs.MVVM.Forms.Controls;assembly=CouchbaseLabs.MVVM.Forms"
+    xmlns:vm="clr-namespace:UserProfileDemo.Core.ViewModels;assembly=UserProfileDemo.Core"
+    x:TypeArguments="vm:UniversitiesViewModel"
+    x:Class="UserProfileDemo.Pages.UniversitiesPage">
+    <pages:BaseContentPage.Content>
+        <StackLayout>
+            <SearchBar Placeholder="Name" Text="{Binding Name}" />
+            <SearchBar Placeholder="Country (optional)" Text="{Binding Country}" />
+            
+            <Button Text="Lookup" Command="{Binding SearchCommand}" IsEnabled="{Binding IsSearchEnabled}"
+                    WidthRequest="150" BackgroundColor="Red" TextColor="White" FontAttributes="Bold"
+                    HorizontalOptions="CenterAndExpand" Margin="10" />
+            
+            <BoxView BackgroundColor="Gray" HeightRequest="1" HorizontalOptions="FillAndExpand" />
+            
+            <controls:ListView ItemsSource="{Binding Universities}"
+                               ItemTappedCommand="{Binding SelectCommand}"
+                               SeparatorVisibility="None" 
+                               HasUnevenRows="true">
+                <controls:ListView.ItemTemplate>
+                    <DataTemplate>
+                        <ViewCell>
+                            <StackLayout Margin="0">
+                                <StackLayout Margin="10">
+                                    <Label Text="{Binding Name}" />
+                                    <Label Text="{Binding Country}" FontSize="Small" />
+                                </StackLayout>
+                                <BoxView BackgroundColor="Gray" HeightRequest="1" HorizontalOptions="FillAndExpand" />
+                            </StackLayout>
+                        </ViewCell>
+                    </DataTemplate>
+                </controls:ListView.ItemTemplate>
+            </controls:ListView>
+        </StackLayout>
+    </pages:BaseContentPage.Content>
+</pages:BaseContentPage>

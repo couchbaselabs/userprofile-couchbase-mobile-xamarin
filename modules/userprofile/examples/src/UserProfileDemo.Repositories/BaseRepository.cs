@@ -1,84 +1,42 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Couchbase.Lite;
-using UserProfileDemo.Core.Respositories;
 
-namespace UserProfileDemo.Respositories
+namespace UserProfileDemo.Repositories
 {
-    public abstract class BaseRepository<T,K> : IRepository<T,K> where T : class
+    public abstract class BaseRepository : IDisposable
     {
-        string DatabaseName { get; set; }
-        ListenerToken DatabaseListenerToken { get; set; }
+        readonly string _databaseName;
 
-        protected virtual DatabaseConfiguration DatabaseConfig { get; set; }
-
-        // tag::database[]
         Database _database;
-        protected Database Database
-        {
-            get
-            {
-                if (_database == null)
-                {
-                    // tag::databaseCreate[]
-                    _database = new Database(DatabaseName, DatabaseConfig);
-                    // end::databaseCreate[]
-                }
-
-                return _database;
-            }
-            private set => _database = value;
-        }
-        // end::database[]
 
         protected BaseRepository(string databaseName)
         {
-            if (string.IsNullOrEmpty(databaseName))
+            _databaseName = databaseName;
+        }
+
+        protected virtual async Task<Database> GetDatabaseAsync()
+        {
+            if (_database == null)
             {
-                throw new Exception($"Repository Exception: Database name cannot be null or empty!");
+                var databaseManager = new DatabaseManager(_databaseName);
+
+                if (databaseManager != null)
+                {
+                    _database = await databaseManager.GetDatabaseAsync();
+                }
             }
 
-            DatabaseName = databaseName;
-
-            // tag::registerForDatabaseChanges[]
-            DatabaseListenerToken = Database.AddChangeListener(OnDatabaseChangeEvent);
-            // end::registerForDatabaseChanges[]
+            return _database;
         }
 
-        // tag::addChangeListener[]
-        void OnDatabaseChangeEvent(object sender, DatabaseChangedEventArgs e)
+        public virtual void Dispose()
         {
-            foreach (var documentId in e.DocumentIDs)
+            if (_database != null)
             {
-                var document = Database?.GetDocument(documentId);
-
-                string message = $"Document (id={documentId}) was ";
-
-                if (document == null)
-                {
-                    message += "deleted";
-                }
-                else
-                {
-                    message += "added/updaAted";
-                }
-
-                Console.WriteLine(message);
+                _database.Close();
+                _database = null;
             }
         }
-        // end::addChangeListener[]
-
-        // tag::databaseClose[]
-        public void Dispose()
-        {
-            DatabaseConfig = null;
-
-            Database.RemoveChangeListener(DatabaseListenerToken);
-            Database.Close();
-            Database = null;
-        }
-        // end::databaseClose[]
-
-        public abstract T Get(K id);
-        public abstract bool Save(T obj);
     }
 }

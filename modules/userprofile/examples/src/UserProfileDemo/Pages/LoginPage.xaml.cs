@@ -1,16 +1,13 @@
-﻿using System;
+﻿using CouchbaseLabs.MVVM.Forms.Pages;
 using UserProfileDemo.Core.ViewModels;
-using Xamarin.Forms;
 
 namespace UserProfileDemo.Pages
 {
-    public partial class LoginPage : ContentPage
+    public partial class LoginPage : BaseContentPage<LoginViewModel>
     {
-        public LoginPage(Action signInSuccessful)
+        public LoginPage()
         {
             InitializeComponent();
-
-            BindingContext = new LoginViewModel(signInSuccessful);
         }
 
         protected override void OnAppearing()

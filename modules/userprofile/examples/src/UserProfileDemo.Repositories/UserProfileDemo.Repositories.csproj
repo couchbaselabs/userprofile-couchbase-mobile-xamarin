@@ -11,4 +11,10 @@
   <ItemGroup>
     <PackageReference Include="Couchbase.Lite" Version="2.1.2" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="UniversityRepository.json" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
 </Project>

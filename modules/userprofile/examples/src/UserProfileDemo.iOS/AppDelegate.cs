@@ -1,5 +1,8 @@
-﻿using Foundation;
+﻿using CouchbaseLabs.MVVM;
+using Foundation;
 using UIKit;
+using UserProfileDemo.iOS.Services;
+using UserProfileDemo.Repositories.Services;
 
 namespace UserProfileDemo.iOS
 {
@@ -24,9 +27,16 @@ namespace UserProfileDemo.iOS
             Couchbase.Lite.Support.iOS.Activate();
             // end::activate[]
 
+            RegisterServices();
+
             LoadApplication(new App());
 
             return base.FinishedLaunching(app, options);
+        }
+
+        void RegisterServices()
+        {
+            ServiceContainer.Register<IDatabaseSeedService>(() => new DatabaseSeedService());
         }
     }
 }

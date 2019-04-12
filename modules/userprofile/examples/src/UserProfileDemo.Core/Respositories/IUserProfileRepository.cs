@@ -1,10 +1,12 @@
-﻿using UserProfileDemo.Models;
+﻿using System;
+using System.Threading.Tasks;
+using UserProfileDemo.Models;
 
 namespace UserProfileDemo.Core.Respositories
 {
-    public interface IUserProfileRepository : IRepository<UserProfile, string>
+    public interface IUserProfileRepository : IDisposable
     {
-        new UserProfile Get(string userProfileId);
-        new bool Save(UserProfile userProfile);
+        Task<UserProfile> GetAsync(string userProfileId);
+        Task<bool> SaveAsync(UserProfile userProfile);
     }
 }

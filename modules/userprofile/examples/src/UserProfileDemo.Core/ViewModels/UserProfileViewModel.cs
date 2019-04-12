@@ -1,23 +1,21 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using System.Windows.Input;
+using CouchbaseLabs.MVVM;
+using CouchbaseLabs.MVVM.Input;
+using CouchbaseLabs.MVVM.Services;
 using UserProfileDemo.Core.Respositories;
 using UserProfileDemo.Core.Services;
 using UserProfileDemo.Models;
 
 namespace UserProfileDemo.Core.ViewModels
 {
-    public class UserProfileViewModel : BaseViewModel
+    public class UserProfileViewModel : BaseNavigationViewModel
     {
-        Action LogoutSuccessful { get; set; }
-
         IUserProfileRepository UserProfileRepository { get; set; }
         IAlertService AlertService { get; set; }
         IMediaService MediaService { get; set; }
 
-        // tag::userProfileDocId[]
         string UserProfileDocId => $"user::{AppInstance.User.Username}";
-        // end::userProfileDocId[]
 
         string _name;
         public string Name
@@ -45,6 +43,13 @@ namespace UserProfileDemo.Core.ViewModels
         {
             get => _imageData;
             set => SetPropertyChanged(ref _imageData, value);
+        }
+
+        string _university;
+        public string University
+        {
+            get => _university ?? "Select University";
+            set => SetPropertyChanged(ref _university, value);
         }
 
         ICommand _saveCommand;
@@ -75,6 +80,20 @@ namespace UserProfileDemo.Core.ViewModels
             }
         }
 
+        ICommand _selectUniversityCommand;
+        public ICommand SelectUniversityCommand
+        {
+            get
+            {
+                if (_selectUniversityCommand == null)
+                {
+                    _selectUniversityCommand = new Command(async () => await NavigateToUniversities());
+                }
+
+                return _selectUniversityCommand;
+            }
+        }
+
         ICommand _logoutCommand;
         public ICommand LogoutCommand
         {
@@ -89,13 +108,14 @@ namespace UserProfileDemo.Core.ViewModels
             }
         }
 
-        public UserProfileViewModel(IUserProfileRepository userProfileRepository, IAlertService alertService, 
-                                    IMediaService mediaService, Action logoutSuccessful)
+        public UserProfileViewModel(INavigationService navigationService, 
+                                    IUserProfileRepository userProfileRepoiory,
+                                    IAlertService alertService,
+                                    IMediaService mediaService) : base(navigationService)
         {
-            UserProfileRepository = userProfileRepository;
+            UserProfileRepository = userProfileRepoiory;
             AlertService = alertService;
             MediaService = mediaService;
-            LogoutSuccessful = logoutSuccessful;
 
             LoadUserProfile();
         }
@@ -104,11 +124,9 @@ namespace UserProfileDemo.Core.ViewModels
         {
             IsBusy = true;
 
-            var userProfile = await Task.Run(() =>
+            var userProfile = await Task.Run(async () =>
             {
-                // tag::getUserProfileUsingRepo[]
-                var up = UserProfileRepository?.Get(UserProfileDocId);
-                // end::getUserProfileUsingRepo[]
+                var up = await UserProfileRepository?.GetAsync(UserProfileDocId);
 
                 if (up == null)
                 {
@@ -128,12 +146,13 @@ namespace UserProfileDemo.Core.ViewModels
                 Email = userProfile.Email;
                 Address = userProfile.Address;
                 ImageData = userProfile.ImageData;
+                University = userProfile.University;
             }
 
             IsBusy = false;
         }
 
-        Task Save()
+        async Task Save()
         {
             var userProfile = new UserProfile
             {
@@ -141,19 +160,20 @@ namespace UserProfileDemo.Core.ViewModels
                 Name = Name,
                 Email = Email,
                 Address = Address, 
-                ImageData = ImageData
+                ImageData = ImageData,  
+                University = University
             };
+   
+            var success = await UserProfileRepository.SaveAsync(userProfile).ConfigureAwait(false);
 
-            // tag::saveUserProfileUsingRepo[]
-            bool? success = UserProfileRepository?.Save(userProfile);
-            // end::saveUserProfileUsingRepo[]
-
-            if (success.HasValue && success.Value)
+            if (success)
             {
-                return AlertService.ShowMessage(null, "Successfully updated profile!", "OK");
+                await AlertService.ShowMessage(null, "Successfully updated profile!", "OK");
             }
-
-            return AlertService.ShowMessage(null, "Error updating profile!", "OK");
+            else
+            {
+                await AlertService.ShowMessage(null, "Error updating profile!", "OK");
+            }
         }
 
         async Task SelectImage()
@@ -166,14 +186,24 @@ namespace UserProfileDemo.Core.ViewModels
             }
         }
 
+        Task NavigateToUniversities()
+        {
+            var vm = ServiceContainer.GetInstance<UniversitiesViewModel>();
+
+            vm.UniversitySelected = UniversitySelected;
+
+            return Navigation.PushAsync(vm);
+        }
+
+        void UniversitySelected(string name) => University = name;
+
         void Logout()
         {
             UserProfileRepository.Dispose();
 
             AppInstance.User = null;
 
-            LogoutSuccessful?.Invoke();
-            LogoutSuccessful = null;
+            Navigation.ReplaceRoot(ServiceContainer.GetInstance<LoginViewModel>(), false);
         }
     }
 }
