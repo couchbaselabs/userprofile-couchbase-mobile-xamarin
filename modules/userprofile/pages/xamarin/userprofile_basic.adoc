@@ -54,7 +54,7 @@ In this tutorial you will be working with an app that allows users to log in and
 
 User profile information is persisted as a `Document` in the local Couchbase Lite `Database`. When the user logs out and logs back in again, the profile information is loaded from the `Database`.
 
-image::{imagesdir}xamarin/user_profile.gif[200,400]
+image::{imagesdir}/xamarin/user_profile.gif[200,400]
 
 == Installation
 
