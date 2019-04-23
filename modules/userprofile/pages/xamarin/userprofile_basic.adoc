@@ -4,7 +4,6 @@
 :icons: font
 :quick-uri: https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/
 :page-aliases: tutorials:userprofile-couchbase-mobile-xamarin:standalone/userprofile/userprofile_basic
-:imagesdir: ./images
 ifndef::env-site,env-github[]
 :toc: left
 :toclevels: 3
