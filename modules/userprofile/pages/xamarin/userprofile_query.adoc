@@ -1,0 +1,362 @@
+= User Profile Sample: Couchbase Lite Query Introduction
+:idprefix:
+:idseparator: -
+:icons: font
+:quick-uri: https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/
+:page-aliases: tutorials:userprofile-couchbase-mobile-xamarin:query/userprofile/userprofile_query
+ifndef::env-site,env-github[]
+:toc: left
+:toclevels: 3
+endif::[]
+
+toc::[]
+
+== Introduction
+Couchbase Lite 2.0 brings powerful querying and Full-Text-Search(FTS) capabilties to the edge. The new query interface is based on link:https://www.couchbase.com/products/n1ql[N1QL], Couchbase’s declarative query language that extends link:https://www.sqlite.org/index.html[SQL] for JSON. If you are familiar with SQL, you will feel right at home with the semantics of the new API.  The query API is designed using the link:https://en.wikipedia.org/wiki/Fluent_interface[Fluent API Design Pattern], and it uses method cascading to read to like a Domain Specific Language (DSL). This makes the interface very intuitive and easy to understand.
+
+Couchbase Lite can be used as a standalone embedded database within your mobile app.
+
+This tutorial will walk through a simple swift app that will 
+
+* Demonstrate how you can bundle, load and use a  **_prebuilt_** instance of Couchbase Lite 2.0 
+* Introduce you to the basics of the `QueryBuilder` interface
+
+====
+You can learn more about Couchbase Mobile https://developer.couchbase.com/mobile[here]
+====
+
+== Prerequisites
+This tutorial assumes familiarity with building Xamarin apps and with the basics of Couchbase Lite
+
+* If you are unfamiliar with the basics of Couchbase Lite, it is recommended that you walk through the link:https://docs.couchbase.com/userprofile-couchbase-mobile/standalone/userprofile/xamarin/userprofile_basic.html[Fundamentals Tutorial] on using Couchbase Lite 2.0 as a standalone database
+
+* iOS (Xcode 10.0+) 
+* Android (SDK 21+)
+* UWP (Windows 10)
+                        
+* git (Optional)
+This is required if you would prefer to pull the source code from GitHub repo.
+** Create a link:https://github.com[free github account] if you don't already have one
+** git can be downloaded from link:https://git-scm.com/book/en/v2/Getting-Started-Installing-Git[git-scm.org]
+
+== App Overview
+We will be working with a very simple "User Profile" app. If you had walked through the link:https://docs.couchbase.com/userprofile-couchbase-mobile/standalone/userprofile/xamarin/userprofile_basic.html[Fundamentals tutorial], you would quickly realize that this version extends the functionality introduced in the version introduced in that tutorial.
+
+This app does the following 
+
+* Allows users to log in and create or update his/her user profile information. You could do that in the link:https://docs.couchbase.com/userprofile-couchbase-mobile/standalone/userprofile/xamarin/userprofile_basic.html[Fundamentals tutorial]
+
+* As part of profile information, users can now selecting a `University` from a list of possible options.
+
+The list of matching univerisities is queried (using the new Query API) from a local _prebuilt_ "University" Couchbase Lite database that is bundled in the app. The user profile information is persisted as a `Document` in the local Couchbase Lite database. So subsquently, when the user logs out and logs back in again, the profile information is loaded from the `Database`.
+
+image::https://raw.githubusercontent.com/couchbaselabs/userprofile-couchbase-mobile/query/content/modules/userprofile/assets/images/university_app_overview.gif[App Overview]
+
+== Installation
+
+=== Fetching App Source Code
+
+==== Option 1 : Git Clone
+
+- Clone the *_query_* branch of the `User Profile Demo` project from GitHub. Type the following command in your terminal
++
+[source,bash] 
+----
+  git clone -b query https://github.com/couchbaselabs/userprofile-couchbase-mobile-xamarin.git
+----
+
+==== Option 2 : Download .zip
+
+- Download the  `User Profile Demo` project from link:https://github.com/couchbaselabs/userprofile-couchbase-mobile-xamarin/archive/query.zip[here]
+
+=== Installing Couchbase Lite Framework
+
+- Next, we will download the Couchbase Lite 2.0 framework. The Couchbase Lite iOS framework is link:https://developer.couchbase.com/documentation/mobile/2.0/couchbase-lite/swift.html[distributed] via Cocoapods, Carthage or you can download the pre-built framework. In our example, we will be downloading the pre-built version of the framework. For this, do the following
++
+[source,bash] 
+----
+  cd /path/to/UserProfileDemo/content/modules/userprofile/examples
+
+  sh install_9.sh
+----
+
+Now, let's verify the installation
+
+=== Try it out
+* Open the `UserProfileDemo.sln`. The project would be located at `/path/to/UserProfileDemo/src`.
++
+[source,bash]
+----
+open UserProfileDemo.sln
+----
++
+* Build the solution using your preferred IDE (e.g. link:https://visualstudio.microsoft.com/[Visual Studio for Windows or Mac]) or link:https://docs.microsoft.com/en-us/dotnet/core/tools/dotnet-build?tabs=netcore2x[directly through command line].
+* link:https://docs.microsoft.com/en-us/xamarin/get-started/first-app/index?pivots=windows[Run the app] on a device or simulator/emulator.
+* Verify that you see the login screen.
++
+image::xamarin/user_profile_login.png[User Profile Login Screen Image]
+
+== Solution Overview
+
+The User Profile demo app is a Xamarin.Forms based solution that supports iOS, Android, and UWP mobile platforms. The solution utilizes various design patterns and principles such as link:https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93viewmodel[MVVM], link:https://en.wikipedia.org/wiki/Inversion_of_control[IoC], and the Repository Pattern. 
+
+The solution consists of nine projects.
+
+* *UserProfileDemo*: A .NET Standard project responsible for maintaining view-level functionality.
+
+* *UserProfileDemo.Core*: A .NET Standard project responsible for maintaining viewmodel-level functionality.
+
+* *UserProfileDemo.Models*: A .NET Standard project consisting of simple data models.
+
+* *UserProfileDemo.Repositories*: A .NET Standard project consisting of repository classes responsible for Couchbase Lite database initilization, interaction, etc.
+
+* *UserProfileDemo.iOS*: A Xamarin.iOS platform project responsible for building the `.ipa` file.
+
+* *UserProfileDemo.Android*: A Xamarin.Android platform project responsible for building the `.apk` file.
+
+* *UserProfileDemo.UWP*: A UWP platform project responsible for building the `.exe` file.
+
+* *CouchbaseLabs.MVVM*: A .NET Standard project consisting of navigation, depedency injection, and MVVM helpers classes agnostic to platform dependencies. 
+
+* *CouchbaseLabs.MVVM.Forms*: A .NET Standard project consisting of navigation, depedency injection, and MVVM helpers classes specifically supporting Xamarin.Forms. 
+
+Now that you have an understanding of the solution architecture let's dive into the app!
+
+== Couchbase Lite Nuget
+
+Before diving into the code for the apps, it is important to point out the Couchbase Lite dependencies within the solution. The link:https://www.nuget.org/packages/Couchbase.Lite/[Couchbase.Lite Nuget package] is included as a reference within four projects of this solution:
+
+<1> UserProfileDemo.Repositories
+<2> UserProfileDemo.iOS
+<3> UserProfileDemo.Android
+<4> UserProfileDemo.UWP
+
+The `Couchbase.Lite` Nuget package contains the core functionality for Couchbase Lite. In the following sections you will dive into the capabilities it the package provides.
+
+== Data Model
+Couchbase Lite is a JSON Document Store. A `Document` is a logical collection of named fields and values.The values are any valid JSON types. In addition to the standard JSON types, Couchbase Lite supports some special types like `Date` and `Blob`.
+While it is not required or enforced, it is a recommended practice to include a _"type"_ property that can serve as a namespace for related. 
+
+=== The "User Profile" Document
+The app deals with a single `Document` with a _"type"_ property of _"user"_.  The document ID is of the form _"user::<email>"_.
+An example of a document would be 
+
+```json
+{
+    "type":"user",
+    "name":"Jane Doe",
+    "email":"jane.doe@earth.org",
+    "address":"101 Main Street",
+    "image":CBLBlob (image/jpg),
+    "university":"Missouri State University"
+}
+```
+
+=== UserRecord 
+
+The _"user"_ `Document` is encoded to a native struct named _UserRecord_.
+
+[source,swift]
+----
+include::{examplesdir}/UserProfileDemo/model/UserRecord.swift[tags=userrecord]
+----
+
+== The "University" Document
+The app comes bundled with a collection of Documents of type _"university"_. Each `Document` represents a university.
+
+
+```json
+{
+    "type":"university","web_pages": [
+      "http://www.missouristate.edu/"
+    ],
+    "name": "Missouri State University",
+    "alpha_two_code": "US",
+    "state-province": MO,
+    "domains": [
+      "missouristate.edu"
+    ],
+    "country": "United States"
+}
+```
+
+=== University 
+
+The _"university"_ `Document` is encoded to a `class` named _UniversityRecord_.
+
+[source,swift]
+----
+include::{examplesdir}/UserProfileDemo.Models/University.cs[tags=universityrecord]
+----
+
+== Using a Prebuilt Database
+There are several reasons why you may want to bundle your app with a prebuilt database. This would be suited for data that does not change or change that often, so you can avoid the bandwidth and latency involved in fetching/syncing this data from a remote server. This also improves the overall user experience by reducing the start-up time.
+
+In our app, the instance of Couchbase Lite that holds the pre-loaded _"university"_ data is separate from the Couchbase Lite instance that holds _"user"_ data hold the pre-loaded data.  A separate Couchbase Lite instance is not required. However, in our case, since there can be many users potentially using the app on a given device,  it makes more sense to keep it separate. This is to avoid duplication of pre-loaded data for every user.
+
+=== Location of the cblite file
+The pre-built database will be in the form of a `cblite` file. It should be be in your app project bundle
+
+==== iOS
+
+* In the `UserProfileDemo.iOS` project, locate the `universities.cblite2` folder
++
+image::cblite_location.png[Prebuilt Database Location]
+
+==== Android
+
+* In the `UserProfileDemo.Android` cfrtg project, locate the `universities.zip` file. Note that the cblite folder will be extracted from the zip file.
++
+image::cblite_location.png[Prebuilt Database Location]
+
+==== UWP
+
+* In the `UserProfileDemo.UWP` project, locate the `universities.cblite2` folder
++
+image::cblite_location.png[Prebuilt Database Location]
+
+=== Loading the Prebuilt Database
+* Open the **DatabaseManager.cs** file and locate the `GetDatabaseAsync()` function. The prebuilt database is common to all users of the app (on the device). So it will be loaded once and shared by all users on the device.
++
+[source,c#]
+----
+include::{examplesdir}/UserProfileDemo.Repositories/DatabaseManager.cs[tags=openPrebuiltDatabase]
+----
+
+* First, we create an instance of `DatabaseConfiguration` object and specify the path where the database would be located
++
+[source,c#]
+----
+include::{examplesdir}/UserProfileDemo.Repositories/DatabaseManager.cs[tags=prebuiltdbconfig]
+----
+
+* Then we determine if the "universities" database already exists at the specified location. It would not be present if this is the first time we are using the app, in which case, we locate the _"universities.cblite"_ resource within the platfor project and we copy it over to the Database folder.
++
+If the database is already present at the specified Database location, we simply open the database.
++ 
+[source,c#]
+----
+include::{examplesdir}/UserProfileDemo.Repositories/DatabaseManager.cs[tags=prebuiltdbopen]
+----
+
+=== Indexing the Prebuilt Database
+* Creating indexes for non-FTS based queries is optional. However, in order to speed up queries, you can create indexes on the properties that you would query against. Indexing is handled eagerly.
+
+* In the **DatabaseManager.cs** file, locate the `CreateUniversitiesDatabaseIndexes()` method. We create an index on the `name` and `location` properties of the documents in the _university_ database.
++
+[source,c#]
+----
+include::{examplesdir}/UserProfileDemo.Repositories/DatabaseManager.cs[tags=createUniversityDatabaseIndexes]
+----
+
+=== Closing the Database
+When a user logs out, we close the pre-built database along with other user-specific databases
+
+* In the **UniversityRepository.cs** file, locate the `closePrebuiltDatabase()` function. 
++
+[source,c#]
+----
+include::{examplesdir}/UserProfileDemo/model/DatabaseManager.swift[tags=closePrebuiltDatabase]
+----
+
+* Closing the database is pretty straightforward
++
+[source,c#]
+----
+include::{examplesdir}/UserProfileDemo/model/DatabaseManager.swift[tags=dbclose]
+----
+
+=== Try It Out
+* The app should be running in the simulator
+* Log into the app with any email Id and password. Let's use the values _"demo@example.com"_ and _"password"_ for user Id and password fields respectively. If this is the first time that _any_ user is signing in to the app, the pre-built database will be loaded from the App Bundle. In addition, new user-specific Database will be created / opened.
+
+==== Confirmation of Results (iOS)
+* Confirm that the console log output has a message similar to the one below. In my example, I am logging in with a user email Id of _"demo@example.com"_.
++
+[source,bash]
+----
+Will open Prebuilt DB  at path /Users/[user_id]/Library/Developer/CoreSimulator/Devices/[unique_device_id]/data/Containers/Data/Application/[unique_app_id]/Library/Application Support
+
+2018-05-04 17:04:16.319360-0400 UserProfileDemo[54115:13479070] CouchbaseLite/2.0.0 (Swift; iOS 11.3; iPhone) Build/806 Commit/2f2a2097+CHANGES LiteCore/2.0.0 (806)
+
+2018-05-04 17:04:16.319721-0400 UserProfileDemo[54115:13479070] CouchbaseLite minimum log level is Verbose
+Will open/create DB  at path /Users/[user_name]/Library/Developer/CoreSimulator/Devices/[unique_device_id]/data/Containers/Data/Application/[unique_app_id]/Library/Application Support/demo@example.com
+---- 
+* The above log message indicate the location of the Prebuilt database as well as the Database for the user. This would be within the _Application Support_ folder.
+* Open the folder in your Finder app and verify that a Database with name _"univerities"_ exists along with a user specific Database with name _"userprofile"_
++
+image::db_locations.png[Database Locations]
+
+== Exploring the Query API
+The Query API in Couchbase Lite 2.0 is extensive. In our app, we will be using the `QueryBuilder` API to make a simple _pattern matching_ query using the `like` operator. 
+
+=== Fetching University Document
+From the "Your Profile" screen, when the user taps on the "University" cell, a search screen is displayed where the user can enter the search criteria (name and optionally, the location) for the university. When the search criteria is entered, the local _"universities"_ database is queried for <<The "University" Document>> documents that match the specified search criteria. 
+
+* Open the **UniversityRepository.cs** file and locate the `SearchByName` method.
++
+[source,c#]
+----
+include::{examplesdir}/UserProfileDemo.Repositories/UniversityRepository.cs[tags=fetchUniversityRecords]
+----
+
+* We build the Query using the `QueryBuilder` API that will look for Documents that match the specified criteria.
++
+[source,c#]
+----
+include::{examplesdir}/UserProfileDemo.Repository/UniversityRepository.cs[tags=buildquery]
+----
++
+<1> Build a `QueryExpression` that uses the `like` operator to look for the specified _"name"_ string in the _"name"_ property. Notice couple of things here: (a) The use of *wildcard "%" operator* to denote that we are looking for the presence of the string anywhere in the _"name"_ property and (b) The use of `Function.Lower()` to convert the search string into lowercase equivalent. Since `like` operator does _case-senstive matching_, we convert the search string and the property value to lowercase equivalents and compare the two.
+<2> If the location criteria was specified in the search, then Build a `QueryExpression` that uses the `like` operator to look for the specified _"location"_ string in the _"location"_ property.
+<3> The `SelectResult.All()` specifiees that we are interested in all properties in Documents that match the specified criteria
+<4> The `DataSource.Database(db)` specified the Data Source
+<5> We include the `where` clause that is the logical ANDing of the QueryExpression in <1> and <2>
+
+
+* We run the Query by calling the `Execute()` method on the Query that was constructed in the previous step
++
+[source,c#]
+----
+include::{examplesdir}/UserProfileDemo.Repositories/UniversityRepository.cs[tags=runquery]
+----
+<1> Create an instance of <<University>> type
+<1> Use specific type getters to fetch property values. The <<University>> instance is populated with these property values.
+
+=== Try It Out
+* You should have followed the steps discussed in the "Try It Out" section under <<Loading the Prebuilt Database>>
+* Tap on "University" table cell
+* You should see a screen show that allows you enter the search criteria for the university
+* Enter "Harv" for name . You can optionally enter "united states" for location
+* Confirm that you see a list of universities that match the criteria
++
+image::https://raw.githubusercontent.com/couchbaselabs/userprofile-couchbase-mobile/query/content/modules/userprofile/assets/images/university_list.gif[University List]
++
+* Select a university 
+* Press "Done" button
+* Confirm that the university you selected shows up in the University table cell
++
+image::https://raw.githubusercontent.com/couchbaselabs/userprofile-couchbase-mobile/query/content/modules/userprofile/assets/images/university_selection.gif[University Selection]
++
+* You can optionally fill in other entries in the User Profile screen
+* Tap "Done" button
+* Confirm that you see an alert message "Succesfully Updated Profile". The Document will be updated this time.
+* Tap "Log Off" and log out of the app
+* Log back into the app with the same user email Id and password that you used earlier. In my example, I used _"demo@example.com"_ and _"password"_. So I will log in with those credentials again.
+* Confirm that you see the profile screen  with the _university_ value that you set earlier. 
++
+image::https://raw.githubusercontent.com/couchbaselabs/userprofile-couchbase-mobile/query/content/modules/userprofile/assets/images/profile_update.gif[Log Off and Log Back On]
+
+== Learn More
+Congratulations on completing this tutorial!
+
+This tutorial walked you through an example of how to use a pre-built Couchbase Lite database. We looked at a simple Query example. Check out the following links for further details on the Query API.
+
+=== Further Reading
+* link:https://blog.couchbase.com/sql-for-json-query-interface-couchbase-mobile/[Fundamentals of the Couchbase Lite 2.0 Query API]
+
+* link:https://blog.couchbase.com/querying-array-collections-couchbase-mobile/[Handling Arrays in Queries]
+
+* link:https://blog.couchbase.com/full-text-search-couchbase-mobile-2-0/[Couchbase Lite 2.0 Full Text Search API]
+
+* link:https://blog.couchbase.com/join-queries-couchbase-mobile/[Couchbase Lite 2.0 JOIN Query]
