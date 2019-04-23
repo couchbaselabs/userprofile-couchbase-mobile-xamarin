@@ -1,8 +1,11 @@
-﻿using System;
+﻿using CouchbaseLabs.MVVM;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using UserProfileDemo.Repositories.Services;
+using UserProfileDemo.UWP.Services;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -30,7 +33,14 @@ namespace UserProfileDemo.UWP
             Couchbase.Lite.Support.UWP.Activate();
             // end::activate[]
 
+            RegisterServices();
+
             LoadApplication(new UserProfileDemo.App());
+        }
+
+        void RegisterServices()
+        {
+            ServiceContainer.Register<IDatabaseSeedService>(() => new DatabaseSeedService());
         }
     }
 }

@@ -123,18 +123,20 @@
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\DatabaseSeedService.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="UserProfileDemo.UWP_TemporaryKey.pfx" />
-    <None Include="Assets\universities.cblite2\db.sqlite3" />
-    <None Include="Assets\universities.cblite2\db.sqlite3-shm" />
-    <None Include="Assets\universities.cblite2\db.sqlite3-wal" />
+    <Content Include="Assets\universities.cblite2\db.sqlite3" />
+    <Content Include="Assets\universities.cblite2\db.sqlite3-shm" />
+    <Content Include="Assets\universities.cblite2\db.sqlite3-wal" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\icon.png" />
+    <Content Include="icon.png" />
+    <Content Include="profile_placeholder.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -172,6 +174,18 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CouchbaseLabs.MVVM.Forms\CouchbaseLabs.MVVM.Forms.csproj">
+      <Project>{ee600352-a041-45b4-bae3-6aaf7d8b14aa}</Project>
+      <Name>CouchbaseLabs.MVVM.Forms</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CouchbaseLabs.MVVM\CouchbaseLabs.MVVM.csproj">
+      <Project>{8645db4a-3ac6-4f0c-a67b-b3dd8321cc0d}</Project>
+      <Name>CouchbaseLabs.MVVM</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UserProfileDemo.Repositories\UserProfileDemo.Repositories.csproj">
+      <Project>{d99b097d-e0b6-41cb-add7-838b7d818164}</Project>
+      <Name>UserProfileDemo.Repositories</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UserProfileDemo\UserProfileDemo.csproj">
       <Project>{bd1e66ec-28f3-4404-97c5-f7ab7cd019f8}</Project>
       <Name>UserProfileDemo</Name>
