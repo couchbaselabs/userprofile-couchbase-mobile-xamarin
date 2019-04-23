@@ -1,10 +1,11 @@
+
+
 = User Profile Sample: Couchbase Lite Fundamentals
 :idprefix:
 :idseparator: -
 :icons: font
 :quick-uri: https://asciidoctor.org/docs/asciidoc-syntax-quick-reference/
 :page-aliases: tutorials:userprofile-couchbase-mobile-xamarin:standalone/userprofile/userprofile_basic
-:imagesdir: ./images
 ifndef::env-site,env-github[]
 :toc: left
 :toclevels: 3
@@ -55,7 +56,7 @@ In this tutorial you will be working with an app that allows users to log in and
 
 User profile information is persisted as a `Document` in the local Couchbase Lite `Database`. When the user logs out and logs back in again, the profile information is loaded from the `Database`.
 
-image::{imagesdir}/xamarin/user_profile.gif[200,400]
+image::xamarin/user_profile.gif[200,400]
 
 == Installation
 
@@ -88,7 +89,7 @@ open UserProfileDemo.sln
 * link:https://docs.microsoft.com/en-us/xamarin/get-started/first-app/index?pivots=windows[Run the app] on a device or simulator/emulator.
 * Verify that you see the login screen.
 +
-image::xamarin/user_profile_login.png[User Profile Login Screen Image]
+image::{imagesdir}/xamarin/user_profile_login.png[User Profile Login Screen Image]
 
 == Solution Overview
 
@@ -129,7 +130,7 @@ In order to use Couchbase Lite within a Xamarin app the previously mentioned Cou
 
 === iOS
 
-Open link:src/UserProfileDemo.iOS/AppDelegate.cs[`AppDelegate.cs`] in the `UserProfileDemo.iOS` project. 
+Open link:{examplesdir}/src/UserProfileDemo.iOS/AppDelegate.cs[`AppDelegate.cs`] in the `UserProfileDemo.iOS` project. 
 
 [source,c#]
 ----
@@ -138,7 +139,7 @@ include::{examplesdir}/src/UserProfileDemo.iOS/AppDelegate.cs[tags=activate,inde
 
 === Android
 
-Open link:src/UserProfileDemo.Android/MainActivity.cs[`MainActivity.cs`] in the `UserProfileDemo.Android` project. 
+Open link:{examplesdir}/src/UserProfileDemo.Android/MainActivity.cs[`MainActivity.cs`] in the `UserProfileDemo.Android` project. 
 
 [source,c#]
 ----
@@ -147,7 +148,7 @@ include::{examplesdir}/src/UserProfileDemo.Android/MainActivity.cs[tags=activate
 
 === UWP
 
-Open link:src/UserProfileDemo.UWP/MainPage.xaml.cs[`MainPage.xaml.cs`] in the `UserProfileDemo.UWP` project. 
+Open link:{examplesdir}/src/UserProfileDemo.UWP/MainPage.xaml.cs[`MainPage.xaml.cs`] in the `UserProfileDemo.UWP` project. 
 
 [source,c#]
 ----
@@ -177,7 +178,7 @@ An example of a document would be
 
 === UserProfile 
 
-The _"user"_ `Document` is encoded to a class named _UserProfile_ that resides in the link:src/UserProfileDemo.Models/[UserProfileDemo.Models] project.
+The _"user"_ `Document` is encoded to a class named _UserProfile_ that resides in the link:{examplesdir}/src/UserProfileDemo.Models/[UserProfileDemo.Models] project.
 
 [source,c#]
 ----
@@ -190,14 +191,14 @@ In this section, we will do a code walkthrough of the basic Database operations
 === Create / Open a Database
 When a user logs in, we create an empty Couchbase Lite database for the user if one does not exist.
 
-* Open the link:src/UserProfileDemo.Repositories/BaseRepository.cs[*BaseRepository.cs*] file and locate the `Database` property. When the `Database` property is used for the first time a Couchbase Lite database will be opened, or created if it does not already exist via the instantiation of a new object.
+* Open the link:{examplesdir}/src/UserProfileDemo.Repositories/BaseRepository.cs[*BaseRepository.cs*] file and locate the `Database` property. When the `Database` property is used for the first time a Couchbase Lite database will be opened, or created if it does not already exist via the instantiation of a new object.
 +
 [source,c#]
 ----
 include::{examplesdir}/src/UserProfileDemo.Repositories/BaseRepository.cs[tags=database,indent=0]
 ----
 
-* We create an instance of the `DatabaseConfiguration` within link:src/UserProfileDemo.Repositories/UserProfileRepository.cs[*UserProfileRepository.cs*] via an `abstract` requirement from the parent class, `BaseRepository`. This is an optional step. In our case, we would like to override the default path of the database. Every user has their own instance of the `Database` that is located in a folder corresponding to the user. Please note that the default path is platform specific.
+* We create an instance of the `DatabaseConfiguration` within link:{examplesdir}/src/UserProfileDemo.Repositories/UserProfileRepository.cs[*UserProfileRepository.cs*] via an `abstract` requirement from the parent class, `BaseRepository`. This is an optional step. In our case, we would like to override the default path of the database. Every user has their own instance of the `Database` that is located in a folder corresponding to the user. Please note that the default path is platform specific.
 +
 [source,c#]
 ---- 
@@ -214,7 +215,7 @@ include::{examplesdir}/src/UserProfileDemo.Repositories/BaseRepository.cs[tags=d
 === Listening to Database Changes
 You can be asynchronously notified of any change (add, delete, update) to the `Database` by registering a change listener with the `Database`. In our app, we are not doing anything special with the `Database` change notification other than logging the change. In a real world app, you would use this notification for instance, to update the UI.
 
-* Open the link:src/UserProfileDemo.Repositories/BaseRepository.cs[*BaseRepository.cs*] file and locate the `Database.AddChangeListener` function usage within the constructor. To register a change listener with the database we add the delegate method `OnDatabaseChangeEvent`. This is an optional step. The `AddChangeListener` method returns a `ListenerToken`. The `ListenerToken` is required to remove the listener from the database.
+* Open the link:{examplesdir}/src/UserProfileDemo.Repositories/BaseRepository.cs[*BaseRepository.cs*] file and locate the `Database.AddChangeListener` function usage within the constructor. To register a change listener with the database we add the delegate method `OnDatabaseChangeEvent`. This is an optional step. The `AddChangeListener` method returns a `ListenerToken`. The `ListenerToken` is required to remove the listener from the database.
 [source,c#]
 +
 ----
@@ -231,7 +232,7 @@ include::{examplesdir}/src/UserProfileDemo.Repositories/BaseRepository.cs[tags=a
 === Disposing of the Repository 
 When a user logs out, we close the Couchbase Lite database associated with the user, deregister any database change listeners, and free up memory allocations.
 
-Open the link:src/UserProfileDemo.Repositories/BaseRepository.cs[*BaseRepository.cs*] file and locate the `Dispose` method. In our sample `Dispose` handles the removal of database listeners, removing various objects from memory, and closing the database.  `Dispose` will be called when a user logs out. 
+Open the link:{examplesdir}/src/UserProfileDemo.Repositories/BaseRepository.cs[*BaseRepository.cs*] file and locate the `Dispose` method. In our sample `Dispose` handles the removal of database listeners, removing various objects from memory, and closing the database.  `Dispose` will be called when a user logs out. 
 
 [source,c#] 
 ----
@@ -247,7 +248,7 @@ include::{examplesdir}/src/UserProfileDemo.Repositories/BaseRepository.cs[tags=d
 +
 [source,bash]
 ----
-Will open/create DB  at path Will open/create DB  at path /Users/[user_name]/Library/Developer/CoreSimulator/Devices/[unique_device_id]/data/Containers/Data/Application/[unique_app_id]/Library/Application Support/demo@couchbase.com
+Will open/create DB  at path Will open/create DB  at path /Users/[user_name]/Library/Developer/CoreSimulator/Devices/[unique_device_id]/data/Containers/Data/Application/[unique_app_id]/Library/Application Support/demo@example.com
 ---- 
 * The above log message indicates the location of the database for the user
 * Open the folder in your Finder app and verify that a database with name _"userprofile"_ is exists for the user
@@ -260,7 +261,7 @@ Once an instance of the Couchbase Lite database is created/opened for the specif
 === Reading a Document
 Once the user logs in, the user is taken to the "Your Profile" screen. A request is made to load  <<The "User Profile" Document>>  for the user. When the user logs in the very first time, there would be no _user profile_ document for the user.
 
-* Open the link:src/UserProfileDemo.Core/ViewModels/UserProfileViewModel.cs[*UserProfileViewModel.cs*] file and locate the `userProfileDocId` definition. This document Id is constructed by prefixing the term "user::" to the username of the user.
+* Open the link:{examplesdir}/src/UserProfileDemo.Core/ViewModels/UserProfileViewModel.cs[*UserProfileViewModel.cs*] file and locate the `userProfileDocId` definition. This document Id is constructed by prefixing the term "user::" to the username of the user.
 +
 [source,c#]
 ----
@@ -274,7 +275,7 @@ include::{examplesdir}/src/UserProfileDemo.Core/ViewModels/UserProfileViewModel.
 include::{examplesdir}/src/UserProfileDemo.Core/ViewModels/UserProfileViewModel.cs[tags=getUserProfileUsingRepo,indent=0]
 ----
 
-* In the link:src/UserProfileDemo.Repositories/UserProfileRepository.cs[*UserProfileRepository.cs*] file, locate the `Get` function.
+* In the link:{examplesdir}/src/UserProfileDemo.Repositories/UserProfileRepository.cs[*UserProfileRepository.cs*] file, locate the `Get` function.
 +
 [source,c#]
 ----
@@ -303,7 +304,7 @@ The function below applies whether you are creating a document or updating an ex
 include::{examplesdir}/src/UserProfileDemo.Core/ViewModels/UserProfileViewModel.cs[tags=saveUserProfileUsingRepo,indent=0]
 ----
 
-* Open the link:src/UserProfileDemo.Repositories/UserProfileRepository.cs[*UserProfileRepository.cs*] file and locate the `Save` function.
+* Open the link:{examplesdir}/src/UserProfileDemo.Repositories/UserProfileRepository.cs[*UserProfileRepository.cs*] file and locate the `Save` function.
 + 
 [source,c#]
 ----
