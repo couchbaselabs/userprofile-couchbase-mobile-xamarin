@@ -78,7 +78,7 @@ image::xamarin/user_profile.gif[200,400]
 Once all of the solution bits have been retrieved you can verify the installation, and run the app!
 
 === Try it out
-* Open the `UserProfileDemo.sln`. The project would be located at `/path/to/UserProfileDemo/src`.
+* Open the `UserProfileDemo.sln`. The project would be located at `/path/to/UserProfileDemo/modules/userprofile/examples/src`.
 +
 [source,bash]
 ----
