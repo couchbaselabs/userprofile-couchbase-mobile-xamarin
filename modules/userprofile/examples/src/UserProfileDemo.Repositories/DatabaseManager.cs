@@ -22,7 +22,9 @@ namespace UserProfileDemo.Repositories
             _databaseName = databaseName;
         }
 
+        // tag::getDatabase[]
         public async Task<Database> GetDatabaseAsync()
+        // end::getDatabase[]
         {
             if (_database == null)
             {
@@ -38,29 +40,36 @@ namespace UserProfileDemo.Repositories
                 }
                 else if (_databaseName == "universities")
                 {
+                    // tag::prebuiltdbconfig[]
                     var options = new DatabaseConfiguration();
 
                     var defaultDirectory = Service.GetInstance<IDefaultDirectoryResolver>().DefaultDirectory();
 
                     options.Directory = defaultDirectory;
+                    // end::prebuiltdbconfig[]
 
                     if (!Database.Exists(_databaseName, defaultDirectory))
                     {
-                        // Load prebuilt database to path
-                        var copier = ServiceContainer.GetInstance<IDatabaseSeedService>();
+                        // tag::prebuiltdbnotopen[]
+                        // The path to copy the prebuilt database to
+                        var databaseSeedService = ServiceContainer.GetInstance<IDatabaseSeedService>();
 
-                        if (copier != null)
+                        if (databaseSeedService != null)
                         {
-                            await copier.CopyDatabaseAsync(defaultDirectory);
+                            // Use a (resolved) platform service to copy the database to 'defaultDirectory'
+                            await databaseSeedService.CopyDatabaseAsync(defaultDirectory);
 
                             _database = new Database(_databaseName, options);
 
                             CreateUniversitiesDatabaseIndexes();
                         }
+                        // end::prebuiltdbnotopen[]
                     }
                     else
                     {
+                        // tag::prebuiltdbopen[]
                         _database = new Database(_databaseName, options);
+                        // end::prebuiltdbopen[]
                     }
                 }
             }
@@ -68,11 +77,13 @@ namespace UserProfileDemo.Repositories
             return _database;
         }
 
+        // tag::createUniversityDatabaseIndexes[]
         void CreateUniversitiesDatabaseIndexes()
         {
             _database.CreateIndex("NameLocationIndex",
                                   IndexBuilder.ValueIndex(ValueIndexItem.Expression(Expression.Property("name")),
                                                           ValueIndexItem.Expression(Expression.Property("location"))));
         }
+        // end::createUniversityDatabaseIndexes[]
     }
 }

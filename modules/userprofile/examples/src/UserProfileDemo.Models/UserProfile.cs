@@ -3,6 +3,7 @@
     // tag::userprofile[]
     public class UserProfile
     {
+        public string type => "user";
         public string Id { get; set; }
         public string Name { get; set; }
         public string Email { get; set; }

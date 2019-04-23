@@ -30,11 +30,15 @@ namespace UserProfileDemo.Repositories
             return _database;
         }
 
+        // tag::disposeDatabase[]
         public virtual void Dispose()
+        // end::disposeDatabase[]
         {
             if (_database != null)
             {
+                // tag::dbclose[]
                 _database.Close();
+                // end::dbclose[]
                 _database = null;
             }
         }
