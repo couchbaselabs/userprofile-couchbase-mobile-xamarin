@@ -169,13 +169,13 @@ The app comes bundled with a collection of documents of type _"university"_. Eac
 
 === University 
 
-The _"university"_ `Document` is encoded to a `class` named _UniversityRecord_.
-
+The _"university"_ `Document` is encoded to a `class` named _University_.
+ 
 [source,c#]
 ----
-include::{examplesdir}/src/UserProfileDemo.Models/University.cs[tags=university,indent=0]
+include::{examplesdir}/src/UserProfileDemo.Models/University.cs[tags=university,indent=0] 
 ----
-
+ 
 == Using a Prebuilt Database
 There are several reasons why you may want to bundle your app with a prebuilt database. This would be suited for data that does not change or change that often, so you can avoid the bandwidth and latency involved in fetching/syncing this data from a remote server. This also improves the overall user experience by reducing the start-up time.
 
