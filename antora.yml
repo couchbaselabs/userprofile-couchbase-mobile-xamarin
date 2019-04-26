@@ -1,4 +1,4 @@
 name: userprofile-couchbase-mobile
 nav:
 title: User Profile Tutorial
-version: 'standalone'
+version: 'query'
