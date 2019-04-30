@@ -7,7 +7,6 @@ namespace UserProfileDemo.Repositories
     public abstract class BaseRepository : IDisposable
     {
         readonly string _databaseName;
-        Database _database;
 
         protected DatabaseManager _databaseManager;
         protected DatabaseManager DatabaseManager
@@ -28,26 +27,8 @@ namespace UserProfileDemo.Repositories
             _databaseName = databaseName;
         }
 
-        protected virtual async Task<Database> GetDatabaseAsync()
-        {
-            if (_database == null)
-            {
-                _database = await DatabaseManager?.GetDatabaseAsync();
-            }
+        protected virtual Task<Database> GetDatabaseAsync() => DatabaseManager?.GetDatabaseAsync();
 
-            return _database;
-        }
-
-        public virtual void Dispose()
-        {
-            if (_database != null)
-            {
-                _database.Close();
-                _database = null;
-
-                // Stop the replicator only after the database has been closed!
-                DatabaseManager?.StopReplication();
-            }
-        }
+        public virtual void Dispose() => DatabaseManager?.Dispose();
     }
 }

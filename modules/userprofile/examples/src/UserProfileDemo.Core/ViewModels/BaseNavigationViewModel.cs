@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using CouchbaseLabs.MVVM;
 using CouchbaseLabs.MVVM.Services;
 using CouchbaseLabs.MVVM.ViewModels;
 

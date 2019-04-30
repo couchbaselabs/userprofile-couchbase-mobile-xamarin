@@ -13,7 +13,5 @@ namespace CouchbaseLabs.MVVM.ViewModels
         }
 
         public virtual Task InitAsync() => Task.FromResult(true);
-
-        public virtual Task LoadAsync(bool refresh) => Task.FromResult(true);
     }
 }

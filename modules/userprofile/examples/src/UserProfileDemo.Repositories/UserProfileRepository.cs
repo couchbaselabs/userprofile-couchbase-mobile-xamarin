@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Couchbase.Lite;
 using Couchbase.Lite.Query;
+using UserProfileDemo.Core;
 using UserProfileDemo.Core.Respositories;
 using UserProfileDemo.Models;
 
@@ -10,7 +11,11 @@ namespace UserProfileDemo.Repositories
     public sealed class UserProfileRepository : BaseRepository, IUserProfileRepository
     {
         public UserProfileRepository() : base("userprofiles")
-        { }
+        {
+            Task.Run(async () => await DatabaseManager.StartReplicationAsync(AppInstance.User.Username,
+                                                               AppInstance.User.Password,
+                                                               new string[] { AppInstance.User.Username }));                                                            
+        }
 
         // Retrieve the UserProfile directly from the database using the userProfileId
         public async Task<UserProfile> GetAsync(string userProfileId)
@@ -77,23 +82,27 @@ namespace UserProfileDemo.Repositories
                         {
                             if (e?.Results != null && e.Error == null)
                             {
-                                userProfile = new UserProfile(); // <2>
-
-                            foreach (var result in e.Results.AllResults())
+                                foreach (var result in e.Results.AllResults())
                                 {
-                                    var dictionary = result.GetDictionary("userprofile"); // <3>
+                                    var dictionary = result.GetDictionary("userprofiles"); // <2>
 
-                                if (dictionary != null)
+                                    if (dictionary != null)
                                     {
-                                        userProfile.Name = dictionary.GetString("name");
-                                        userProfile.Email = dictionary.GetString("email");
-                                        userProfile.Address = dictionary.GetString("address");
-                                        userProfile.University = dictionary.GetString("university");
-                                        userProfile.ImageData = dictionary.GetBlob("image")?.Content; // <4>
-                                }
+                                        userProfile = new UserProfile // <3>
+                                        {
+                                            Name = dictionary.GetString("Name"), // <4>
+                                            Email = dictionary.GetString("Email"),
+                                            Address = dictionary.GetString("Address"),
+                                            University = dictionary.GetString("University"),
+                                            ImageData = dictionary.GetBlob("ImageData")?.Content
+                                        };
+                                    }
                                 }
 
-                                userProfileUpdated.Invoke(userProfile);
+                                if (userProfile != null)
+                                {
+                                    userProfileUpdated.Invoke(userProfile);
+                                }
                             }
                         });
                         // end::livequery[]
@@ -142,10 +151,10 @@ namespace UserProfileDemo.Repositories
 
         public override void Dispose()
         {
-            base.Dispose();
-
             // Remove the live query change listener
             _userQuery.RemoveChangeListener(_userQueryToken);
+
+            base.Dispose();
         }
     }
 }

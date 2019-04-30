@@ -12,14 +12,15 @@ using UserProfileDemo.Repositories.Services;
 
 namespace UserProfileDemo.Repositories
 {
-    public class DatabaseManager
+    public class DatabaseManager : IDisposable
     {
-        readonly URLEndpoint _targetUrlEndpoint = new URLEndpoint(new Uri(""));
+        readonly Uri _remoteSyncUrl = new Uri("ws://localhost:4984");
         readonly string _databaseName;
 
-        Database _database;
         Replicator _replicator;
         ListenerToken _replicatorListenerToken;
+
+        Database _database;
 
         public DatabaseManager(string databaseName)
         {
@@ -90,8 +91,10 @@ namespace UserProfileDemo.Repositories
         {
             var database = await GetDatabaseAsync();
 
+            var targetUrlEndpoint = new URLEndpoint(new Uri(_remoteSyncUrl, _databaseName));
+
             // tag::replicationconfig[]
-            var configuration = new ReplicatorConfiguration(database, _targetUrlEndpoint) // <1>
+            var configuration = new ReplicatorConfiguration(database, targetUrlEndpoint) // <1>
             {
                 ReplicatorType = replicationType, // <2>
                 Continuous = continuous, // <3>
@@ -160,6 +163,14 @@ namespace UserProfileDemo.Repositories
                 _replicator = null;
             }
             // end::replicationcleanup[]
+        }
+
+        public void Dispose()
+        {
+            StopReplication();
+
+            _database.Close();
+            _database = null;
         }
     }
 }

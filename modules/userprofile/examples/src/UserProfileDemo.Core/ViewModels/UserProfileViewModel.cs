@@ -109,18 +109,17 @@ namespace UserProfileDemo.Core.ViewModels
         }
 
         public UserProfileViewModel(INavigationService navigationService, 
-                                    IUserProfileRepository userProfileRepoiory,
+                                    IUserProfileRepository userProfileRepository,
                                     IAlertService alertService,
                                     IMediaService mediaService) : base(navigationService)
         {
-            UserProfileRepository = userProfileRepoiory;
+            UserProfileRepository = userProfileRepository;
+
             AlertService = alertService;
             MediaService = mediaService;
-
-            LoadUserProfile();
         }
 
-        async void LoadUserProfile()
+        public override async Task InitAsync()
         {
             IsBusy = true;
 
@@ -208,7 +207,7 @@ namespace UserProfileDemo.Core.ViewModels
 
             AppInstance.User = null;
 
-            Navigation.ReplaceRoot(ServiceContainer.GetInstance<LoginViewModel>(), false);
+            Navigation.ReplaceRoot<LoginViewModel>(false);
         }
     }
 }
