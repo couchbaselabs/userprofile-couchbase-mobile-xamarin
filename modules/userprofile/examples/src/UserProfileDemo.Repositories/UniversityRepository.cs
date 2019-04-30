@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Couchbase.Lite.Query;
 using UserProfileDemo.Core.Respositories;

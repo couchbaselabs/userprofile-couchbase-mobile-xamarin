@@ -7,8 +7,21 @@ namespace UserProfileDemo.Repositories
     public abstract class BaseRepository : IDisposable
     {
         readonly string _databaseName;
-
         Database _database;
+
+        protected DatabaseManager _databaseManager;
+        protected DatabaseManager DatabaseManager
+        {
+            get
+            {
+                if (_databaseManager == null)
+                {
+                    _databaseManager = new DatabaseManager(_databaseName);
+                }
+
+                return _databaseManager;
+            }
+        }
 
         protected BaseRepository(string databaseName)
         {
@@ -19,27 +32,21 @@ namespace UserProfileDemo.Repositories
         {
             if (_database == null)
             {
-                var databaseManager = new DatabaseManager(_databaseName);
-
-                if (databaseManager != null)
-                {
-                    _database = await databaseManager.GetDatabaseAsync();
-                }
+                _database = await DatabaseManager?.GetDatabaseAsync();
             }
 
             return _database;
         }
 
-        // tag::disposeDatabase[]
         public virtual void Dispose()
-        // end::disposeDatabase[]
         {
             if (_database != null)
             {
-                // tag::dbclose[]
                 _database.Close();
-                // end::dbclose[]
                 _database = null;
+
+                // Stop the replicator only after the database has been closed!
+                DatabaseManager?.StopReplication();
             }
         }
     }

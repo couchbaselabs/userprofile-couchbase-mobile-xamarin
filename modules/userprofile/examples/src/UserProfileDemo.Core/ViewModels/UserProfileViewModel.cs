@@ -126,7 +126,7 @@ namespace UserProfileDemo.Core.ViewModels
 
             var userProfile = await Task.Run(async () =>
             {
-                var up = await UserProfileRepository?.GetAsync(UserProfileDocId);
+                var up = await UserProfileRepository?.GetAsync(UserProfileDocId, UpdateUserProfile);
 
                 if (up == null)
                 {
@@ -142,14 +142,19 @@ namespace UserProfileDemo.Core.ViewModels
 
             if (userProfile != null)
             {
-                Name = userProfile.Name;
-                Email = userProfile.Email;
-                Address = userProfile.Address;
-                ImageData = userProfile.ImageData;
-                University = userProfile.University;
+                UpdateUserProfile(userProfile);
             }
 
             IsBusy = false;
+        }
+
+        void UpdateUserProfile(UserProfile userProfile)
+        {
+            Name = userProfile.Name;
+            Email = userProfile.Email;
+            Address = userProfile.Address;
+            ImageData = userProfile.ImageData;
+            University = userProfile.University;
         }
 
         async Task Save()

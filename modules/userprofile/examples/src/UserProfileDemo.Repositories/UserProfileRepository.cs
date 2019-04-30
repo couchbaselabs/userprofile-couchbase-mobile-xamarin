@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Couchbase.Lite;
+using Couchbase.Lite.Query;
 using UserProfileDemo.Core.Respositories;
 using UserProfileDemo.Models;
 
@@ -11,6 +12,7 @@ namespace UserProfileDemo.Repositories
         public UserProfileRepository() : base("userprofiles")
         { }
 
+        // Retrieve the UserProfile directly from the database using the userProfileId
         public async Task<UserProfile> GetAsync(string userProfileId)
         {
             UserProfile userProfile = null;
@@ -34,6 +36,67 @@ namespace UserProfileDemo.Repositories
                             ImageData = document.GetBlob("ImageData")?.Content,
                             University = document.GetString("University")
                         };
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"UserProfileRepository Exception: {ex.Message}");
+            }
+
+            return userProfile;
+        }
+
+        IQuery _userQuery;
+        ListenerToken _userQueryToken;
+
+        // Retrieve the UserProfile using the QueryBuilder class, and optionally pass an Action to receive Live Query updates
+        // tag::getUserLiveQuery[]
+        public async Task<UserProfile> GetAsync(string userProfileId, Action<UserProfile> userProfileUpdated)
+        // end::getUserLiveQuery[]
+        {
+            UserProfile userProfile = null;
+
+            try
+            {
+                var database = await GetDatabaseAsync();
+
+                if (database != null)
+                {
+                    // tag::livequerybuilder[]
+                    _userQuery = QueryBuilder
+                                    .Select(SelectResult.All())
+                                    .From(DataSource.Database(database))
+                                    .Where(Meta.ID.EqualTo(Expression.String(userProfileId))); // <1>
+                    // end::livequerybuilder[]
+
+                    if (userProfileUpdated != null)
+                    {
+                        // tag::livequery[]
+                        _userQueryToken = _userQuery.AddChangeListener((object sender, QueryChangedEventArgs e) => // <1>
+                        {
+                            if (e?.Results != null && e.Error == null)
+                            {
+                                userProfile = new UserProfile(); // <2>
+
+                            foreach (var result in e.Results.AllResults())
+                                {
+                                    var dictionary = result.GetDictionary("userprofile"); // <3>
+
+                                if (dictionary != null)
+                                    {
+                                        userProfile.Name = dictionary.GetString("name");
+                                        userProfile.Email = dictionary.GetString("email");
+                                        userProfile.Address = dictionary.GetString("address");
+                                        userProfile.University = dictionary.GetString("university");
+                                        userProfile.ImageData = dictionary.GetBlob("image")?.Content; // <4>
+                                }
+                                }
+
+                                userProfileUpdated.Invoke(userProfile);
+                            }
+                        });
+                        // end::livequery[]
                     }
                 }
             }
@@ -75,6 +138,14 @@ namespace UserProfileDemo.Repositories
             }
 
             return false;
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            // Remove the live query change listener
+            _userQuery.RemoveChangeListener(_userQueryToken);
         }
     }
 }
