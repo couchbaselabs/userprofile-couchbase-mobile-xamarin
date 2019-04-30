@@ -10,6 +10,7 @@ ifndef::env-site,env-github[]
 endif::[]
 :examplesdir: ../../examples
 :imagesdir: ../../assets/images
+:githubsrc: https://github.com/couchbaselabs/userprofile-couchbase-mobile-xamarin/tree/query/modules/userprofile/examples/src
 
 toc::[]
 
@@ -139,9 +140,9 @@ An example of a document would be
 }
 ```
 
-=== UserRecord 
+=== UserProfile
 
-The _"user"_ `Document` is encoded to a native struct named _UserRecord_.
+The _"user"_ `Document` is encoded to a `class` named _UserProfile_.
 
 [source,c#]
 ----
@@ -203,7 +204,7 @@ image::xamarin/cblite_location_android.png[Prebuilt Database Location]
 image::xamarin/cblite_location_uwp.png[Prebuilt Database Location]
 
 === Loading the Prebuilt Database
-* Open the link:{examplesdir}/src/UserProfileDemo.Repositories/DatabaseManager.cs[DatabaseManager.cs] file and locate the `GetDatabaseAsync` method. The prebuilt database is common to all users of the app (on the device). So it will be loaded once and shared by all users on the device.
+* Open the link:{githubsrc}/UserProfileDemo.Repositories/DatabaseManager.cs[DatabaseManager.cs] file and locate the `GetDatabaseAsync` method. The prebuilt database is common to all users of the app (on the device). So it will be loaded once and shared by all users on the device.
 +
 [source,c#]
 ----
@@ -233,7 +234,7 @@ include::{examplesdir}/src/UserProfileDemo.Repositories/DatabaseManager.cs[tags=
 === Indexing the Prebuilt Database
 * Creating indexes for non-FTS based queries is optional. However, in order to speed up queries, you can create indexes on the properties that you would query against. Indexing is handled eagerly.
 
-* In the **DatabaseManager.cs** file, locate the `CreateUniversitiesDatabaseIndexes` method. We create an index on the `name` and `location` properties of the documents in the _university_ database.
+* In the link:{githubsrc}/UserProfileDemo.Repositories/DatabaseManager.cs[*DatabaseManager.cs*] file, locate the `CreateUniversitiesDatabaseIndexes` method. We create an index on the `name` and `location` properties of the documents in the _university_ database.
 +
 [source,c#]
 ----
@@ -243,7 +244,7 @@ include::{examplesdir}/src/UserProfileDemo.Repositories/DatabaseManager.cs[tags=
 === Closing the Database
 When a user logs out, we close the pre-built database along with other user-specific databases
 
-* In the link:{examplesdir}/src/UserProfileDemo.Repositories/BaseRepository.cs[BaseRepository.cs] file, locate the `Dispose` function. 
+* In the link:{githubsrc}/UserProfileDemo.Repositories/BaseRepository.cs[*BaseRepository.cs*] file, locate the `Dispose` function. 
 +
 [source,c#]
 ----
@@ -283,7 +284,7 @@ The Query API in Couchbase Lite 2.0 is extensive. In our app, we will be using t
 === Fetching University Document
 From the "Your Profile" screen, when the user taps on the "University" cell, a search screen is displayed where the user can enter the search criteria (name and optionally, the location) for the university. When the search criteria is entered, the local _"universities"_ database is queried for <<The "University" Document>> documents that match the specified search criteria. 
 
-* Open the link:{examplesdir}/src/UserProfileDemo.Repositories/UniversityRepository.cs[UniversityRepository.cs] file and locate the `SearchByName` method.
+* Open the link:{githubsrc}/UserProfileDemo.Repositories/UniversityRepository.cs[*UniversityRepository.cs*] file and locate the `SearchByName` method.
 +
 [source,c#]
 ----
