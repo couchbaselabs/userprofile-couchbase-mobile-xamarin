@@ -123,6 +123,8 @@ namespace UserProfileDemo.Core.ViewModels
         {
             IsBusy = true;
 
+            await UserProfileRepository.StartReplicationForCurrentUser().ConfigureAwait(false);
+
             var userProfile = await Task.Run(async () =>
             {
                 var up = await UserProfileRepository?.GetAsync(UserProfileDocId, UpdateUserProfile);

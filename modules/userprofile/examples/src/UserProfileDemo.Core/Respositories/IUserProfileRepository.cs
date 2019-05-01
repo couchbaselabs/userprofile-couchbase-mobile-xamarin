@@ -9,5 +9,6 @@ namespace UserProfileDemo.Core.Respositories
         Task<UserProfile> GetAsync(string userProfileId);
         Task<UserProfile> GetAsync(string userProfileId, Action<UserProfile> userProfileUpdate);
         Task<bool> SaveAsync(UserProfile userProfile);
+        Task StartReplicationForCurrentUser();
     }
 }

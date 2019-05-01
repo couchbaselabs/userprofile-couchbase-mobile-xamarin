@@ -10,12 +10,8 @@ namespace UserProfileDemo.Repositories
 {
     public sealed class UserProfileRepository : BaseRepository, IUserProfileRepository
     {
-        public UserProfileRepository() : base("userprofiles")
-        {
-            Task.Run(async () => await DatabaseManager.StartReplicationAsync(AppInstance.User.Username,
-                                                               AppInstance.User.Password,
-                                                               new string[] { AppInstance.User.Username }));                                                            
-        }
+        public UserProfileRepository() : base("userprofile")
+        { }
 
         // Retrieve the UserProfile directly from the database using the userProfileId
         public async Task<UserProfile> GetAsync(string userProfileId)
@@ -35,11 +31,11 @@ namespace UserProfileDemo.Repositories
                         userProfile = new UserProfile
                         {
                             Id = document.Id,
-                            Name = document.GetString("Name"),
-                            Email = document.GetString("Email"),
-                            Address = document.GetString("Address"),
-                            ImageData = document.GetBlob("ImageData")?.Content,
-                            University = document.GetString("University")
+                            Name = document.GetString("name"),
+                            Email = document.GetString("email"),
+                            Address = document.GetString("address"),
+                            ImageData = document.GetBlob("imageData")?.Content,
+                            University = document.GetString("university")
                         };
                     }
                 }
@@ -84,17 +80,17 @@ namespace UserProfileDemo.Repositories
                             {
                                 foreach (var result in e.Results.AllResults())
                                 {
-                                    var dictionary = result.GetDictionary("userprofiles"); // <2>
+                                    var dictionary = result.GetDictionary("userprofile"); // <2>
 
                                     if (dictionary != null)
                                     {
                                         userProfile = new UserProfile // <3>
                                         {
-                                            Name = dictionary.GetString("Name"), // <4>
-                                            Email = dictionary.GetString("Email"),
-                                            Address = dictionary.GetString("Address"),
-                                            University = dictionary.GetString("University"),
-                                            ImageData = dictionary.GetBlob("ImageData")?.Content
+                                            Name = dictionary.GetString("name"), // <4>
+                                            Email = dictionary.GetString("email"),
+                                            Address = dictionary.GetString("address"),
+                                            University = dictionary.GetString("university"),
+                                            ImageData = dictionary.GetBlob("imageData")?.Content
                                         };
                                     }
                                 }
@@ -124,14 +120,14 @@ namespace UserProfileDemo.Repositories
                 if (userProfile != null)
                 {
                     var mutableDocument = new MutableDocument(userProfile.Id);
-                    mutableDocument.SetString("Name", userProfile.Name);
-                    mutableDocument.SetString("Email", userProfile.Email);
-                    mutableDocument.SetString("Address", userProfile.Address);
-                    mutableDocument.SetString("University", userProfile.University);
+                    mutableDocument.SetString("name", userProfile.Name);
+                    mutableDocument.SetString("email", userProfile.Email);
+                    mutableDocument.SetString("address", userProfile.Address);
+                    mutableDocument.SetString("university", userProfile.University);
 
                     if (userProfile.ImageData != null)
                     {
-                        mutableDocument.SetBlob("ImageData", new Blob("image/jpeg", userProfile.ImageData));
+                        mutableDocument.SetBlob("imageData", new Blob("image/jpeg", userProfile.ImageData));
                     }
 
                     var database = await GetDatabaseAsync();
@@ -147,6 +143,13 @@ namespace UserProfileDemo.Repositories
             }
 
             return false;
+        }
+
+        public Task StartReplicationForCurrentUser()
+        {
+            return Task.Run(async () => await DatabaseManager.StartReplicationAsync(AppInstance.User.Username,
+                                                                                    AppInstance.User.Password,
+                                                                                    new string[] { AppInstance.User.Username }));
         }
 
         public override void Dispose()

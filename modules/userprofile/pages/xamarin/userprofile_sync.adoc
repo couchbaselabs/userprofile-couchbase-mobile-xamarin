@@ -490,7 +490,7 @@ include::{examplesdir}/src/UserProfileDemo.Repositories/UserProfileRepository.cs
 ----
 +
 <1> Attach a listener callback to the query. Attaching a listerner automatically makes it _live_ so any time there is a change in the user profile data in the underlying database, the callback would be invoked.
-<2> The `SelectResult.all()` method is used to query all the properties of a document. In this case, the document in the result is embedded in a dictionary where the key is the database name, which is _"userprofile"_. So we retrieve the link:http://docs.couchbase.com/mobile/2.0/couchbase-lite-swift/Classes/DictionaryObject.html[`DictionaryObject`] at key _"userprofile"_.
+<2> The `SelectResult.all()` method is used to query all the properties of a document. In this case, the document in the result is embedded in a dictionary where the key is the database name, which is _"userprofiles"_. So, we retrieve the link:http://docs.couchbase.com/mobile/2.0/couchbase-lite-swift/Classes/DictionaryObject.html[`DictionaryObject`] at key _"userprofiles"_.
 <3> Create an instance of <<UserProfile>>. This will be populated with the query results.
 <4>  We use appropriate _type getters_ to retrieve values and populate the _UserProfile_ instance
 
@@ -498,11 +498,11 @@ include::{examplesdir}/src/UserProfileDemo.Repositories/UserProfileRepository.cs
 === Exercise 1 
 In this exercise, we will observe how changes made on one app are synced across to the other app
 
-* The app should be running in two simulators side by side
-* Log into both the simulators with same userId and password. Use the values _"demo@example.com"_ and _"password"_ for user Id and password fields respectively 
-* On one simulator, enter values in the user and address fields. 
-* Confirm that changes show up in the app on the other simulator. 
-* Similarly, make changes to the app in the other simulator and confirm that the changes are synced over to the first simulator.
+* The app should be running in two simulators/emulators side by side
+* Log into both the simulators/emulators with same userId and password. Use the values _"demo@example.com"_ and _"password"_ for user Id and password fields respectively 
+* On one simulator/emulator, enter values in the user and address fields. 
+* Confirm that changes show up in the app on the other simulator/emulator. 
+* Similarly, make changes to the app in the other simulator/emulator and confirm that the changes are synced over to the first simulator/emulator.
 
 === Exercise 2
 In this exercise, we will observe changes made via Sync Gateway are synced over to the apps
@@ -574,7 +574,7 @@ curl -X PUT \
 ----
 <1> I updated the university field via the REST API. You can choose to update any other profile information
 * Confirm that you get a HTTP _"201 Created"_ status code
-* As soon as you update the document via the Sync Gateway REST API, confirm that the changes show up in the mobile app on the simulator.
+* As soon as you update the document via the Sync Gateway REST API, confirm that the changes show up in the mobile app on the simulator/emulator.
 +
 image::https://raw.githubusercontent.com/couchbaselabs/userprofile-couchbase-mobile/sync/content/modules/userprofile/assets/images/sync_from_sgw.gif[App Sync]
 

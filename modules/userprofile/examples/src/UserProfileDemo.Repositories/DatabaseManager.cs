@@ -31,7 +31,7 @@ namespace UserProfileDemo.Repositories
         {
             if (_database == null)
             {
-                if (_databaseName == "userprofiles")
+                if (_databaseName == "userprofile")
                 {
                     var databaseConfig = new DatabaseConfiguration
                     {
@@ -99,7 +99,7 @@ namespace UserProfileDemo.Repositories
                 ReplicatorType = replicationType, // <2>
                 Continuous = continuous, // <3>
                 Authenticator = new BasicAuthenticator(username, password), // <4>
-                Channels = channels?.Select(x => "$channel.{x}").ToList() // <5>
+                Channels = channels?.Select(x => $"channel.{x}").ToArray() // <5>
             };
             // end::replicationconfig[]
 
@@ -127,7 +127,7 @@ namespace UserProfileDemo.Repositories
                     Console.WriteLine("Busy transferring data.");
                     break;
                 case ReplicatorActivityLevel.Connecting:
-                    Console.WriteLine("Connectin to Sync Gateway.");
+                    Console.WriteLine("Connecting to Sync Gateway.");
                     break;
                 case ReplicatorActivityLevel.Idle:
                     Console.WriteLine("Replicator in idle state.");
@@ -160,7 +160,16 @@ namespace UserProfileDemo.Repositories
             {
                 _replicator.RemoveChangeListener(_replicatorListenerToken);
                 _replicator.Stop();
-                _replicator = null;
+                _replicator.Dispose();
+
+                while (true)
+                {
+                    if (_replicator.Status.Activity == ReplicatorActivityLevel.Stopped)
+                    {
+               
+                        break;
+                    }
+                }
             }
             // end::replicationcleanup[]
         }
