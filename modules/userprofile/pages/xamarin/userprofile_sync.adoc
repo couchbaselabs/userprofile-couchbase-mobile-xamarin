@@ -544,7 +544,7 @@ curl -X GET \
     },
     "name": "",
     "type": "user",
-    "university": "British Institute in Paris, University of London"
+    "university": "Missouri State University"
 }
 ----
 <1> Record the revision Id of the document. You will need this when you update the document
@@ -569,7 +569,7 @@ curl -X PUT \
     },
     "name": "",
     "type": "user",
-    "university": "British Institute in Paris, University of London"
+    "university": "Missouri State University"
 }'
 ----
 <1> I updated the university field via the REST API. You can choose to update any other profile information
