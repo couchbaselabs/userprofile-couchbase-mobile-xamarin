@@ -67,7 +67,7 @@ The app does the following
 * The user profile information is synced with a remote Sync Gateway which then syncs it to other devices (subject to access control and routing configurations specified in the `sync function`)
 
 
-image::https://raw.githubusercontent.com/couchbaselabs/userprofile-couchbase-mobile/sync/content/modules/userprofile/assets/images/userprofile_app_overview.gif[App with Sync]
+image::xamarin/userprofile_app_overview.gif[App with Sync]
 
 == App Installation
 
@@ -101,7 +101,7 @@ open UserProfileDemo.sln
 * Build and run the project using **two simulators/emulators**.
 * Verify that you see the login screen on both the simulators/emulators.
 +
-image::user_profile_login_2.png[User Profile Login Screen Image]
+image::xamarin/user_profile_login.png[User Profile Login Screen Image] 
 
 == Sync Gateway 2.x Installation
 There are several link:https://developer.couchbase.com/documentation/mobile/2.0/installation/sync-gateway/index.html[deployment] options for the Sync Gateway. In our tutorial, we will be using the Sync Gateway installer to install the Sync Gateway on the same _localhost_ as the mobile app.
@@ -404,7 +404,7 @@ include::{examplesdir}/src/UserProfileDemo.Repositories/DatabaseManager.cs[tags=
 * Next, we create an instance of the `ReplicatorConfig` instance that specifies the source and target database and you can optionally, override the default configuration settings.
 +
 [source,c#]
-----
+---- 
 include::{examplesdir}/src/UserProfileDemo.Repositories/DatabaseManager.cs[tags=replicationconfig,indent=0]
 ----
 +
@@ -576,7 +576,7 @@ curl -X PUT \
 * Confirm that you get a HTTP _"201 Created"_ status code
 * As soon as you update the document via the Sync Gateway REST API, confirm that the changes show up in the mobile app on the simulator/emulator.
 +
-image::https://raw.githubusercontent.com/couchbaselabs/userprofile-couchbase-mobile/sync/content/modules/userprofile/assets/images/sync_from_sgw.gif[App Sync]
+image::xamarin/sync_from_sgw.gif[App Sync]
 
 NOTE: From <<Exercise 2>> above, you observed that changes made on the Sync Gateway are propagated to the Couchbase Lite clients. However, if you tried to update the attachment / image using the link:[Attachments REST API], you would not see the image getting updated on the client side. This is a link:[known issue] in 2.0 and should be fixed in the next release.
 

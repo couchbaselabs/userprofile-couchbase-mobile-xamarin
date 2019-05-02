@@ -14,7 +14,12 @@ namespace UserProfileDemo.Repositories
 {
     public class DatabaseManager : IDisposable
     {
+        // Note: User 'localhost' when using a simulator
         readonly Uri _remoteSyncUrl = new Uri("ws://localhost:4984");
+
+        // Note: Use '10.0.2.2' when using an emulator
+        //readonly Uri _remoteSyncUrl = new Uri("ws://10.0.2.2:4984");
+
         readonly string _databaseName;
 
         Replicator _replicator;
@@ -33,10 +38,11 @@ namespace UserProfileDemo.Repositories
             {
                 if (_databaseName == "userprofile")
                 {
+                    var defaultDirectory = Service.GetInstance<IDefaultDirectoryResolver>().DefaultDirectory();
+
                     var databaseConfig = new DatabaseConfiguration
                     {
-                        Directory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-                                        AppInstance.User.Username)
+                        Directory = Path.Combine(defaultDirectory, AppInstance.User.Username)
                     };
 
                     _database = new Database(_databaseName, databaseConfig);
@@ -108,7 +114,7 @@ namespace UserProfileDemo.Repositories
             // end::replicationinit[]
 
             // tag::replicationlistener[]
-            _replicator.AddChangeListener(OnReplicatorUpdate);
+            _replicatorListenerToken = _replicator.AddChangeListener(OnReplicatorUpdate);
             // end::replicationlistener[]
 
             // tag::replicationstart[]
@@ -156,27 +162,29 @@ namespace UserProfileDemo.Repositories
         // end::replicationstop[]
         {
             // tag::replicationcleanup[]
-            if (_replicator != null)
-            {
-                _replicator.RemoveChangeListener(_replicatorListenerToken);
-                _replicator.Stop();
-                _replicator.Dispose();
-
-                while (true)
-                {
-                    if (_replicator.Status.Activity == ReplicatorActivityLevel.Stopped)
-                    {
-               
-                        break;
-                    }
-                }
-            }
+            _replicator.RemoveChangeListener(_replicatorListenerToken);
+            _replicator.Stop();
             // end::replicationcleanup[]
         }
 
         public void Dispose()
         {
-            StopReplication();
+            if (_replicator != null)
+            {
+                StopReplication();
+
+                // Because the 'Stop' method for a Replicator instance is asynchronous 
+                // we must wait for the status activity to be stopped before closing the database. 
+                while (true)
+                {
+                    if (_replicator.Status.Activity == ReplicatorActivityLevel.Stopped)
+                    {
+                        break;
+                    }
+                }
+
+                _replicator.Dispose();
+            }
 
             _database.Close();
             _database = null;

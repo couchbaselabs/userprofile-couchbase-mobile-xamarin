@@ -19,7 +19,7 @@
         </ResourceDictionary>
     </ContentPage.Resources>
     <ContentPage.Content>
-        <Grid Margin="15,25,15,20" RowSpacing="20">
+        <Grid Margin="15,25,15,20" RowSpacing="10">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=".25*" />
                 <ColumnDefinition Width=".75*" />
