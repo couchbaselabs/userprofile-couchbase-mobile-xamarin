@@ -13,7 +13,7 @@ namespace CouchbaseLabs.MVVM.Services
         object ViewModel { get; set; }
     }
 
-    public interface IViewFor<T> : IViewFor  where T : BaseViewModel
+    public interface IViewFor<T> : IViewFor where T : BaseViewModel
     {
         new T ViewModel { get; set; }
     }
@@ -25,8 +25,6 @@ namespace CouchbaseLabs.MVVM.Services
         // View model to view lookup - making the assumption that view model to view will always be 1:1
         readonly Dictionary<Type, Type> _viewModelViewDictionary = new Dictionary<Type, Type>();
 
-        #region Registration
-
         public void AutoRegister(Assembly asm)
         {
             // Loop through everything in the assembly that implements IViewFor<T>
@@ -37,7 +35,7 @@ namespace CouchbaseLabs.MVVM.Services
                 var viewForType = type.ImplementedInterfaces.FirstOrDefault(
                     ii => ii.IsConstructedGenericType &&
                     ii.GetGenericTypeDefinition() == typeof(IViewFor<>));
-                    
+
                 // Register it, using the T as the key and the view as the value
                 Register(viewForType.GenericTypeArguments[0], type.AsType());
 
@@ -45,7 +43,7 @@ namespace CouchbaseLabs.MVVM.Services
             }
         }
 
-        public void Register(Type viewModelType, Type viewType) 
+        public void Register(Type viewModelType, Type viewType)
         {
             if (!_viewModelViewDictionary.ContainsKey(viewModelType))
             {
@@ -53,9 +51,10 @@ namespace CouchbaseLabs.MVVM.Services
             }
         }
 
-        #endregion
-
-        #region Replace
+        public void ReplaceRoot<T>(bool withNavigationEnabled = true) where T : BaseViewModel
+        {
+            ReplaceRoot(ServiceContainer.GetInstance<T>(), withNavigationEnabled);
+        }
 
         public void ReplaceRoot(BaseViewModel viewModel, bool withNavigationEnabled = true)
         {
@@ -72,32 +71,11 @@ namespace CouchbaseLabs.MVVM.Services
             }
         }
 
-        #endregion
-
-        #region Pop
-
         public Task PopAsync() => FormsNavigation.PopAsync(true);
 
         public Task PopToRootAsync(bool animate) => FormsNavigation.PopToRootAsync(animate);
 
-        #endregion
-
-        #region Push
-
         public Task PushAsync(BaseViewModel viewModel) => FormsNavigation.PushAsync((Page)InstantiateView(viewModel));
-
-        public Task PushAsync<T>(Action<T> initialize = null) where T : BaseViewModel
-        {
-            T viewModel;
-
-            // Instantiate the view model & invoke the initialize method, if any
-            viewModel = Activator.CreateInstance<T>();
-            initialize?.Invoke(viewModel);
-
-            return PushAsync(viewModel);
-        }
-
-        #endregion
 
         IViewFor InstantiateView(BaseViewModel viewModel)
         {

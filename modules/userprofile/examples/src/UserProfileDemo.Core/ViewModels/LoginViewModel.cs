@@ -54,7 +54,7 @@ namespace UserProfileDemo.Core.ViewModels
                     Password = Password
                 };
 
-                Navigation.ReplaceRoot(ServiceContainer.GetInstance<UserProfileViewModel>());
+                Navigation.ReplaceRoot<UserProfileViewModel>();
             }
         }
     } 

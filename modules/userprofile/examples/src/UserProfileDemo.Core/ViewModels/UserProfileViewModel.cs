@@ -203,7 +203,7 @@ namespace UserProfileDemo.Core.ViewModels
 
             AppInstance.User = null;
 
-            Navigation.ReplaceRoot(ServiceContainer.GetInstance<LoginViewModel>(), false);
+            Navigation.ReplaceRoot<LoginViewModel>(false);
         }
     }
 }
