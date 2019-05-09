@@ -47,9 +47,9 @@ We will be working with a very simple "User Profile" app. If you had walked thro
 
 This app does the following 
 
-* Allows users to log in and create or update his/her user profile information. You could do that in the link:https://docs.couchbase.com/userprofile-couchbase-mobile/standalone/userprofile/xamarin/userprofile_basic.html[Fundamentals tutorial]
+* Allows users to log in and create or update his/her user profile information. You could do that in the link:https://docs.couchbase.com/userprofile-couchbase-mobile/standalone/userprofile/xamarin/userprofile_basic.html[Fundamentals tutorial].
 
-* As part of profile information, users can now selecting a `University` from a list of possible options.
+* As part of profile information, users have the ability to select a `University` from a list of possible options.
 
 The list of matching univerisities is queried (using the new Query API) from a local _prebuilt_ "University" Couchbase Lite database that is bundled in the app. The user profile information is persisted as a `Document` in the local Couchbase Lite database. So subsquently, when the user logs out and logs back in again, the profile information is loaded from the `Database`.
 
