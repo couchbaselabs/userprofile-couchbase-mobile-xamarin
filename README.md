@@ -15,7 +15,3 @@ This branch hosts an app that demonstrates basic query and full-text-search oper
 ### ["**sync**" branch](https://github.com/couchbaselabs/userprofile-couchbase-mobile-xamarin/tree/sync)
 
 This branch hosts an app that supports syncing of documents between Couchbase Lite database and remote Sync Gateway. 
-
-### ["**background**" branch](https://github.com/couchbaselabs/userprofile-couchbase-mobile-xamarin/tree/backgroundfetch)
-
-This branch hosts an app that supports the background fetch mode for each platform. It does a one-shot replication with the remote Sync Gateway when woken up in the background.
