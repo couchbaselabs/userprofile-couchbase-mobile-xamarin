@@ -8,10 +8,16 @@ Hosts this README
 
 This branch hosts app that demonstrates basic `Database` and `Document` operations using Couchbase Lite as a standalone, embedded database within your mobile app. 
 
+Check out the [Fundamentals Tutorial](https://docs.couchbase.com/userprofile-couchbase-mobile/standalone/userprofile/xamarin/userprofile_basic.html) for more details!
+
 ### ["**query**" branch](https://github.com/couchbaselabs/userprofile-couchbase-mobile-xamarin/tree/query)
 
 This branch hosts an app that demonstrates basic query and full-text-search operations using Couhbase Lite as a standalone, embedded database within your mobile app.
 
+Check out the [Querying Tutorial](https://docs.couchbase.com/userprofile-couchbase-mobile/query/userprofile/xamarin/userprofile_query.html) for more details!
+
 ### ["**sync**" branch](https://github.com/couchbaselabs/userprofile-couchbase-mobile-xamarin/tree/sync)
 
 This branch hosts an app that supports syncing of documents between Couchbase Lite database and remote Sync Gateway. 
+
+Check out the [Couchbase Sync Gateway Tutorial](https://docs.couchbase.com/userprofile-couchbase-mobile/sync/userprofile/xamarin/userprofile_sync.html) for more details!
