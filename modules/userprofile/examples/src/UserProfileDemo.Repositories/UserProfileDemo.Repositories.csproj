@@ -9,6 +9,6 @@
     <ProjectReference Include="..\UserProfileDemo.Core\UserProfileDemo.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Couchbase.Lite" Version="2.1.2" />
+    <PackageReference Include="Couchbase.Lite" Version="2.6.0" />
   </ItemGroup>
 </Project>
