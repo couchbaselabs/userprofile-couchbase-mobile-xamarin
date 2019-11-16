@@ -8,7 +8,7 @@ namespace UserProfileDemo.Repositories
 {
     public sealed class UserProfileRepository : BaseRepository, IUserProfileRepository
     {
-        public UserProfileRepository() : base("userprofiles")
+        public UserProfileRepository() : base("userprofile")
         { }
 
         public async Task<UserProfile> GetAsync(string userProfileId)
