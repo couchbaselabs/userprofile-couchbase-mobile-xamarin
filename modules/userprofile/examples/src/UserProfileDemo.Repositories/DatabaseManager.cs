@@ -28,7 +28,7 @@ namespace UserProfileDemo.Repositories
         {
             if (_database == null)
             {
-                if (_databaseName == "userprofiles")
+                if (_databaseName == "userprofile")
                 {
                     var databaseConfig = new DatabaseConfiguration
                     {
