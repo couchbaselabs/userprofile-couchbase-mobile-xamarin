@@ -56,6 +56,7 @@ namespace UserProfileDemo.Repositories
                     mutableDocument.SetString("Email", userProfile.Email);
                     mutableDocument.SetString("Address", userProfile.Address);
                     mutableDocument.SetString("University", userProfile.University);
+                    mutableDocument.SetString("type", "user");
 
                     if (userProfile.ImageData != null)
                     {
