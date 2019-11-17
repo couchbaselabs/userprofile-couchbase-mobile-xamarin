@@ -85,7 +85,7 @@ namespace UserProfileDemo.Respositories
                     mutableDocument.SetString("Name", userProfile.Name);
                     mutableDocument.SetString("Email", userProfile.Email);
                     mutableDocument.SetString("Address", userProfile.Address);
-
+                    mutableDocument.SetString("type", "user");
                     if (userProfile.ImageData != null)
                     {
                         mutableDocument.SetBlob("ImageData", new Blob("image/jpeg", userProfile.ImageData));
